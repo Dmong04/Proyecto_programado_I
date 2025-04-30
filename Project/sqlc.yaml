@@ -1,8 +1,8 @@
 version: "2"
 sql:
   - engine: "mysql"
-    queries: "./db/queries"
-    schema: "./db/migration"
+    queries: "./database/queries"
+    schema: "./database/migration"
     gen:
       go:
         package: "dto"
