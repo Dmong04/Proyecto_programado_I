@@ -1,8 +1,8 @@
--- name: GetAll :many
+-- name: GetAllAdministradores :many
 SELECT * FROM Administrador;
 
 -- name: GetAdministradorById :one
-SELECT * FROM Administrador WHERE idAdministrador = ?;
+SELECT * FROM Administrador WHERE idAdministrador = ? LIMIT 1;
 
 -- name: CreateAdministrador :execresult
 INSERT INTO Administrador (nombre, usuario, contraseña)
