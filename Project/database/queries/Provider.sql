@@ -1,17 +1,17 @@
--- name: GetAllProveedores :many
+-- name: GetAllProviders :many
 SELECT * FROM Proveedor;
 
--- name: GetProveedorById :one
+-- name: GetProviderById :one
 SELECT * FROM Proveedor WHERE idProveedor = ? LIMIT 1;
 
--- name: CreateProveedor :execresult
+-- name: CreateProvider :execresult
 INSERT INTO Proveedor (nombre, descrip)
 VALUES (?, ?);
 
--- name: UpdateProveedor :exec
+-- name: UpdateProvider :exec
 UPDATE Proveedor
 SET nombre = ?, descrip = ?
 WHERE idProveedor = ?;
 
--- name: DeleteProveedor :exec
+-- name: DeleteProvider :exec
 DELETE FROM Proveedor WHERE idProveedor = ?;

@@ -1,17 +1,20 @@
--- name: GetAllAdministradores :many
+-- name: GetAllAdmins :many
 SELECT * FROM Administrador;
 
--- name: GetAdministradorById :one
+-- name: GetAdminById :one
 SELECT * FROM Administrador WHERE idAdministrador = ? LIMIT 1;
 
--- name: CreateAdministrador :execresult
+-- name: CreateAdmin :execresult
 INSERT INTO Administrador (nombre, usuario, contraseña)
 VALUES (?, ?, ?);
 
--- name: UpdateAdministrador :exec
+-- name: UpdateAdmin :exec
 UPDATE Administrador
-SET nombre = ?, usuario = ?, contraseña = ?
+SET nombre = ?, usuario = ? WHERE idAdministrador = ?;
+
+-- name: UpdateAdminPassword :exec
+UPDATE Administrador SET contraseña = ? 
 WHERE idAdministrador = ?;
 
--- name: DeleteAdministrador :exec
+-- name: DeleteAdmin :exec
 DELETE FROM Administrador WHERE idAdministrador = ?;

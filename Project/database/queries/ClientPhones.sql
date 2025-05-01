@@ -1,17 +1,17 @@
--- name: GetAllTelefonoClientes :many
+-- name: GetAllClientPhones :many
 SELECT * FROM telefonoClientes;
 
--- name: GetTelefonoClienteById :one
+-- name: GetClientPhonesById :one
 SELECT * FROM telefonoClientes WHERE idtelefonoClientes = ? LIMIT 1;
 
--- name: CreateTelefonoCliente :execresult
+-- name: CreateClientPhones :execresult
 INSERT INTO telefonoClientes (numero, tipo, idCliente)
 VALUES (?, ?, ?);
 
--- name: UpdateTelefonoCliente :exec
+-- name: UpdateClientPhones :exec
 UPDATE telefonoClientes
-SET numero = ?, tipo = ?, idCliente = ?
+SET numero = ?, tipo = ?
 WHERE idtelefonoClientes = ?;
 
--- name: DeleteTelefonoCliente :exec
+-- name: DeleteClientPhones :exec
 DELETE FROM telefonoClientes WHERE idtelefonoClientes = ?;

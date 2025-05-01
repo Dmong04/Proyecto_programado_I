@@ -1,17 +1,17 @@
--- name: GetAllHistoriales :many
+-- name: GetAllHistories :many
 SELECT * FROM Historial;
 
--- name: GetHistorialById :one
+-- name: GetHistoryById :one
 SELECT * FROM Historial WHERE idHistorial = ? LIMIT 1;
 
--- name: CreateHistorial :execresult
+-- name: CreateHistory :execresult
 INSERT INTO Historial (descrip, idCliente, idReserva)
 VALUES (?, ?, ?);
 
--- name: UpdateHistorial :exec
+-- name: UpdateHistory :exec
 UPDATE Historial
 SET descrip = ?, idCliente = ?, idReserva = ?
 WHERE idHistorial = ?;
 
--- name: DeleteHistorial :exec
+-- name: DeleteHistory :exec
 DELETE FROM Historial WHERE idHistorial = ?;

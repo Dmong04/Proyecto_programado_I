@@ -1,17 +1,17 @@
--- name: GetAllDetalleViajes :many
+-- name: GetAllTravelDetails :many
 SELECT * FROM detalleViaje;
 
--- name: GetDetalleViajeById :one
+-- name: GetTravelDetailById :one
 SELECT * FROM detalleViaje WHERE iddetalleViaje = ? LIMIT 1;
 
--- name: CreateDetalleViaje :execresult
+-- name: CreateTravelDetail :execresult
 INSERT INTO detalleViaje (tipoViaje, idProveedor, idViaje)
 VALUES (?, ?, ?);
 
--- name: UpdateDetalleViaje :exec
+-- name: UpdateTravelDetail :exec
 UPDATE detalleViaje
 SET tipoViaje = ?, idProveedor = ?, idViaje = ?
 WHERE iddetalleViaje = ?;
 
--- name: DeleteDetalleViaje :exec
+-- name: DeleteTravelDetail :exec
 DELETE FROM detalleViaje WHERE iddetalleViaje = ?;
