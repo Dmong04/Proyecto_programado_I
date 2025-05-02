@@ -1,17 +1,17 @@
--- name: GetAllViajes :many
+-- name: GetAllTravels :many
 SELECT * FROM Viaje;
 
--- name: GetViajeById :one
+-- name: GetTravelById :one
 SELECT * FROM Viaje WHERE idViaje = ? LIMIT 1;
 
--- name: CreateViaje :execresult
+-- name: CreateTravel :execresult
 INSERT INTO Viaje (fecha, hora)
 VALUES (?, ?);
 
--- name: UpdateViaje :exec
+-- name: UpdateTravel :exec
 UPDATE Viaje
 SET fecha = ?, hora = ?
 WHERE idViaje = ?;
 
--- name: DeleteViaje :exec
+-- name: DeleteTravel :exec
 DELETE FROM Viaje WHERE idViaje = ?;

@@ -1,17 +1,17 @@
--- name: GetAllPasajeros :many
+-- name: GetAllPassengers :many
 SELECT * FROM Pasajeros;
 
--- name: GetPasajeroById :one
+-- name: GetPassengersById :one
 SELECT * FROM Pasajeros WHERE idPasajeros = ? LIMIT 1;
 
--- name: CreatePasajero :execresult
+-- name: CreatePassenger :execresult
 INSERT INTO Pasajeros (nombre, edad, idDetalle)
 VALUES (?, ?, ?);
 
--- name: UpdatePasajero :exec
+-- name: UpdatePassenger :exec
 UPDATE Pasajeros
 SET nombre = ?, edad = ?, idDetalle = ?
 WHERE idPasajeros = ?;
 
--- name: DeletePasajero :exec
+-- name: DeletePassenger :exec
 DELETE FROM Pasajeros WHERE idPasajeros = ?;

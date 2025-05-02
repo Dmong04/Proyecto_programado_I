@@ -1,17 +1,21 @@
--- name: GetAllClientes :many
+-- name: GetAllClients :many
 SELECT * FROM Cliente;
 
--- name: GetClienteById :one
+-- name: GetClientById :one
 SELECT * FROM Cliente WHERE idCliente = ? LIMIT 1;
 
--- name: CreateCliente :execresult
+-- name: CreateClient :execresult
 INSERT INTO Cliente (nombre, correo, usuario, contraseña)
 VALUES (?, ?, ?, ?);
 
--- name: UpdateCliente :exec
+-- name: UpdateClient :exec
 UPDATE Cliente
-SET nombre = ?, correo = ?, usuario = ?, contraseña = ?
+SET nombre = ?, correo = ?, usuario = ?
 WHERE idCliente = ?;
 
--- name: DeleteCliente :exec
+-- name: updateClientPassword :exec
+UPDATE Cliente SET contraseña = ? 
+WHERE idCliente = ?;
+
+-- name: DeleteClient :exec
 DELETE FROM Cliente WHERE idCliente = ?;
