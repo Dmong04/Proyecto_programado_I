@@ -44,24 +44,17 @@ CREATE TABLE IF NOT EXISTS `telefonoClientes` (
 -- Tabla: Viaje
 CREATE TABLE IF NOT EXISTS `Viaje` (
   `idViaje` INT NOT NULL AUTO_INCREMENT,
-  `fecha` DATE NOT NULL,
-  `hora` TIME NOT NULL,
+  `tipoViaje` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`idViaje`)
-) ENGINE=InnoDB;
-
--- Tabla: Proveedor
-CREATE TABLE IF NOT EXISTS `Proveedor` (
-  `idProveedor` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(60) NOT NULL,
-  `descrip` VARCHAR(70) NOT NULL,
-  PRIMARY KEY (`idProveedor`)
 ) ENGINE=InnoDB;
 
 -- Tabla: detalleViaje
 CREATE TABLE IF NOT EXISTS `detalleViaje` (
   `iddetalleViaje` INT NOT NULL AUTO_INCREMENT,
   `tipoViaje` VARCHAR(100) NOT NULL,
-  `idProveedor` INT DEFAULT NULL, -- Se permite NULL (ahora es opcional)
+  `fecha` DATE NOT NULL,
+  `hora` TIME NOT NULL,
+  `idProveedor` INT DEFAULT NULL,
   `idViaje` INT NOT NULL,
   PRIMARY KEY (`iddetalleViaje`),
   INDEX `idx_proveedor` (`idProveedor`),
@@ -76,6 +69,14 @@ CREATE TABLE IF NOT EXISTS `detalleViaje` (
     REFERENCES `Proveedor` (`idProveedor`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- Tabla: Proveedor
+CREATE TABLE IF NOT EXISTS `Proveedor` (
+  `idProveedor` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(60) NOT NULL,
+  `descrip` VARCHAR(70) NOT NULL,
+  PRIMARY KEY (`idProveedor`)
 ) ENGINE=InnoDB;
 
 -- Tabla: reservas
