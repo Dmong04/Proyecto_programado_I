@@ -1,5 +1,3 @@
-drop TABLE Administrador;
-drop TABLE Cliente;
 drop TABLE Viaje;
 drop TABLE detalleViaje;
 drop TABLE telefonoClientes;
@@ -7,3 +5,5 @@ drop TABLE Pasajeros;
 drop TABLE reservas;
 drop TABLE Historial;
 drop TABLE Proveedor;
+drop TABLE Administrador;
+drop TABLE Cliente;
