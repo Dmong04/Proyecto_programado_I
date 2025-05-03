@@ -1,5 +1,5 @@
-drop TABLE Viaje;
 drop TABLE detalleViaje;
+drop TABLE Viaje;
 drop TABLE telefonoClientes;
 drop TABLE Pasajeros;
 drop TABLE reservas;
