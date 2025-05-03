@@ -11,6 +11,7 @@ USE `coco_tours_db`;
 CREATE TABLE IF NOT EXISTS `Administrador` (
   `idAdministrador` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
+  `correo` VARCHAR(60) NOT NULL,
   `usuario` VARCHAR(40) NOT NULL,
   `contraseña` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idAdministrador`)
@@ -50,13 +51,12 @@ CREATE TABLE IF NOT EXISTS `Viaje` (
 
 -- Tabla: detalleViaje
 CREATE TABLE IF NOT EXISTS `detalleViaje` (
-  `iddetalleViaje` INT NOT NULL AUTO_INCREMENT,
-  `tipoViaje` VARCHAR(100) NOT NULL,
+  `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
   `fecha` DATE NOT NULL,
   `hora` TIME NOT NULL,
   `idProveedor` INT DEFAULT NULL,
   `idViaje` INT NOT NULL,
-  PRIMARY KEY (`iddetalleViaje`),
+  PRIMARY KEY (`idDetalleViaje`),
   INDEX `idx_proveedor` (`idProveedor`),
   INDEX `idx_viaje` (`idViaje`),
   CONSTRAINT `FK_detalle_viaje_viaje`
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `reservas` (
     ON UPDATE CASCADE,
   CONSTRAINT `FK_reserva_detalle`
     FOREIGN KEY (`idDetalle`)
-    REFERENCES `detalleViaje` (`iddetalleViaje`)
+    REFERENCES `detalleViaje` (`idDetalleViaje`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
@@ -137,7 +137,7 @@ CREATE TABLE IF NOT EXISTS `Pasajeros` (
   INDEX `idx_pasajero_detalle` (`idDetalle`),
   CONSTRAINT `FK_pasajero_detalle`
     FOREIGN KEY (`idDetalle`)
-    REFERENCES `detalleViaje` (`iddetalleViaje`)
+    REFERENCES `detalleViaje` (`idDetalleViaje`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;

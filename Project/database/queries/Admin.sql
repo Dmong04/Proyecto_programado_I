@@ -5,12 +5,12 @@ SELECT * FROM Administrador;
 SELECT * FROM Administrador WHERE idAdministrador = ? LIMIT 1;
 
 -- name: CreateAdmin :execresult
-INSERT INTO Administrador (nombre, usuario, contraseña)
-VALUES (?, ?, ?);
+INSERT INTO Administrador (nombre, correo, usuario, contraseña)
+VALUES (?, ?, ?, ?);
 
 -- name: UpdateAdmin :exec
 UPDATE Administrador
-SET nombre = ?, usuario = ? WHERE idAdministrador = ?;
+SET nombre = ?, correo = ?, usuario = ? WHERE idAdministrador = ?;
 
 -- name: UpdateAdminPassword :exec
 UPDATE Administrador SET contraseña = ? 
