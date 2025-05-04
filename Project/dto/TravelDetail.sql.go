@@ -8,25 +8,32 @@ package dto
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const createTravelDetail = `-- name: CreateTravelDetail :execresult
-INSERT INTO detalleViaje (tipoViaje, idProveedor, idViaje)
-VALUES (?, ?, ?)
+INSERT INTO detalleViaje (fecha, hora, idProveedor, idViaje)
+VALUES (?, ?, ?, ?)
 `
 
 type CreateTravelDetailParams struct {
-	Tipoviaje   string        `json:"tipoviaje"`
+	Fecha       time.Time     `json:"fecha"`
+	Hora        time.Time     `json:"hora"`
 	Idproveedor sql.NullInt32 `json:"idproveedor"`
 	Idviaje     int32         `json:"idviaje"`
 }
 
 func (q *Queries) CreateTravelDetail(ctx context.Context, arg CreateTravelDetailParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createTravelDetail, arg.Tipoviaje, arg.Idproveedor, arg.Idviaje)
+	return q.db.ExecContext(ctx, createTravelDetail,
+		arg.Fecha,
+		arg.Hora,
+		arg.Idproveedor,
+		arg.Idviaje,
+	)
 }
 
 const deleteTravelDetail = `-- name: DeleteTravelDetail :exec
-DELETE FROM detalleViaje WHERE iddetalleViaje = ?
+DELETE FROM detalleViaje WHERE idDetalleViaje = ?
 `
 
 func (q *Queries) DeleteTravelDetail(ctx context.Context, iddetalleviaje int32) error {
@@ -35,7 +42,7 @@ func (q *Queries) DeleteTravelDetail(ctx context.Context, iddetalleviaje int32) 
 }
 
 const getAllTravelDetails = `-- name: GetAllTravelDetails :many
-SELECT iddetalleviaje, tipoviaje, idproveedor, idviaje FROM detalleViaje
+SELECT iddetalleviaje, fecha, hora, idproveedor, idviaje FROM detalleViaje
 `
 
 func (q *Queries) GetAllTravelDetails(ctx context.Context) ([]Detalleviaje, error) {
@@ -49,7 +56,8 @@ func (q *Queries) GetAllTravelDetails(ctx context.Context) ([]Detalleviaje, erro
 		var i Detalleviaje
 		if err := rows.Scan(
 			&i.Iddetalleviaje,
-			&i.Tipoviaje,
+			&i.Fecha,
+			&i.Hora,
 			&i.Idproveedor,
 			&i.Idviaje,
 		); err != nil {
@@ -67,7 +75,7 @@ func (q *Queries) GetAllTravelDetails(ctx context.Context) ([]Detalleviaje, erro
 }
 
 const getTravelDetailById = `-- name: GetTravelDetailById :one
-SELECT iddetalleviaje, tipoviaje, idproveedor, idviaje FROM detalleViaje WHERE iddetalleViaje = ? LIMIT 1
+SELECT iddetalleviaje, fecha, hora, idproveedor, idviaje FROM detalleViaje WHERE idDetalleViaje = ? LIMIT 1
 `
 
 func (q *Queries) GetTravelDetailById(ctx context.Context, iddetalleviaje int32) (Detalleviaje, error) {
@@ -75,7 +83,8 @@ func (q *Queries) GetTravelDetailById(ctx context.Context, iddetalleviaje int32)
 	var i Detalleviaje
 	err := row.Scan(
 		&i.Iddetalleviaje,
-		&i.Tipoviaje,
+		&i.Fecha,
+		&i.Hora,
 		&i.Idproveedor,
 		&i.Idviaje,
 	)
@@ -84,12 +93,13 @@ func (q *Queries) GetTravelDetailById(ctx context.Context, iddetalleviaje int32)
 
 const updateTravelDetail = `-- name: UpdateTravelDetail :exec
 UPDATE detalleViaje
-SET tipoViaje = ?, idProveedor = ?, idViaje = ?
-WHERE iddetalleViaje = ?
+SET fecha = ?, hora = ?, idProveedor = ?, idViaje = ?
+WHERE idDetalleViaje = ?
 `
 
 type UpdateTravelDetailParams struct {
-	Tipoviaje      string        `json:"tipoviaje"`
+	Fecha          time.Time     `json:"fecha"`
+	Hora           time.Time     `json:"hora"`
 	Idproveedor    sql.NullInt32 `json:"idproveedor"`
 	Idviaje        int32         `json:"idviaje"`
 	Iddetalleviaje int32         `json:"iddetalleviaje"`
@@ -97,7 +107,8 @@ type UpdateTravelDetailParams struct {
 
 func (q *Queries) UpdateTravelDetail(ctx context.Context, arg UpdateTravelDetailParams) error {
 	_, err := q.db.ExecContext(ctx, updateTravelDetail,
-		arg.Tipoviaje,
+		arg.Fecha,
+		arg.Hora,
 		arg.Idproveedor,
 		arg.Idviaje,
 		arg.Iddetalleviaje,

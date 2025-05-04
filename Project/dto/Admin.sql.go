@@ -11,18 +11,24 @@ import (
 )
 
 const createAdmin = `-- name: CreateAdmin :execresult
-INSERT INTO Administrador (nombre, usuario, contraseña)
-VALUES (?, ?, ?)
+INSERT INTO Administrador (nombre, correo, usuario, contraseña)
+VALUES (?, ?, ?, ?)
 `
 
 type CreateAdminParams struct {
 	Nombre     string `json:"nombre"`
+	Correo     string `json:"correo"`
 	Usuario    string `json:"usuario"`
 	Contraseña string `json:"contraseña"`
 }
 
 func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createAdmin, arg.Nombre, arg.Usuario, arg.Contraseña)
+	return q.db.ExecContext(ctx, createAdmin,
+		arg.Nombre,
+		arg.Correo,
+		arg.Usuario,
+		arg.Contraseña,
+	)
 }
 
 const deleteAdmin = `-- name: DeleteAdmin :exec
@@ -35,7 +41,7 @@ func (q *Queries) DeleteAdmin(ctx context.Context, idadministrador int32) error 
 }
 
 const getAdminById = `-- name: GetAdminById :one
-SELECT idadministrador, nombre, usuario, contraseña FROM Administrador WHERE idAdministrador = ? LIMIT 1
+SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador WHERE idAdministrador = ? LIMIT 1
 `
 
 func (q *Queries) GetAdminById(ctx context.Context, idadministrador int32) (Administrador, error) {
@@ -44,6 +50,7 @@ func (q *Queries) GetAdminById(ctx context.Context, idadministrador int32) (Admi
 	err := row.Scan(
 		&i.Idadministrador,
 		&i.Nombre,
+		&i.Correo,
 		&i.Usuario,
 		&i.Contraseña,
 	)
@@ -51,7 +58,7 @@ func (q *Queries) GetAdminById(ctx context.Context, idadministrador int32) (Admi
 }
 
 const getAllAdmins = `-- name: GetAllAdmins :many
-SELECT idadministrador, nombre, usuario, contraseña FROM Administrador
+SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador
 `
 
 func (q *Queries) GetAllAdmins(ctx context.Context) ([]Administrador, error) {
@@ -66,6 +73,7 @@ func (q *Queries) GetAllAdmins(ctx context.Context) ([]Administrador, error) {
 		if err := rows.Scan(
 			&i.Idadministrador,
 			&i.Nombre,
+			&i.Correo,
 			&i.Usuario,
 			&i.Contraseña,
 		); err != nil {
@@ -84,17 +92,23 @@ func (q *Queries) GetAllAdmins(ctx context.Context) ([]Administrador, error) {
 
 const updateAdmin = `-- name: UpdateAdmin :exec
 UPDATE Administrador
-SET nombre = ?, usuario = ? WHERE idAdministrador = ?
+SET nombre = ?, correo = ?, usuario = ? WHERE idAdministrador = ?
 `
 
 type UpdateAdminParams struct {
 	Nombre          string `json:"nombre"`
+	Correo          string `json:"correo"`
 	Usuario         string `json:"usuario"`
 	Idadministrador int32  `json:"idadministrador"`
 }
 
 func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error {
-	_, err := q.db.ExecContext(ctx, updateAdmin, arg.Nombre, arg.Usuario, arg.Idadministrador)
+	_, err := q.db.ExecContext(ctx, updateAdmin,
+		arg.Nombre,
+		arg.Correo,
+		arg.Usuario,
+		arg.Idadministrador,
+	)
 	return err
 }
 
