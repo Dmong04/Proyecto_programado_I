@@ -66,6 +66,38 @@ func (q *Queries) GetAllClientPhones(ctx context.Context) ([]Telefonocliente, er
 	return items, nil
 }
 
+const getClientPhonesByClientID = `-- name: GetClientPhonesByClientID :many
+SELECT idtelefonoclientes, numero, tipo, idcliente FROM telefonoClientes WHERE idCliente = ?
+`
+
+func (q *Queries) GetClientPhonesByClientID(ctx context.Context, idcliente int32) ([]Telefonocliente, error) {
+	rows, err := q.db.QueryContext(ctx, getClientPhonesByClientID, idcliente)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Telefonocliente
+	for rows.Next() {
+		var i Telefonocliente
+		if err := rows.Scan(
+			&i.Idtelefonoclientes,
+			&i.Numero,
+			&i.Tipo,
+			&i.Idcliente,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getClientPhonesById = `-- name: GetClientPhonesById :one
 SELECT idtelefonoclientes, numero, tipo, idcliente FROM telefonoClientes WHERE idtelefonoClientes = ? LIMIT 1
 `

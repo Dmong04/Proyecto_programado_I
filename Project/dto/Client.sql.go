@@ -40,6 +40,15 @@ func (q *Queries) DeleteClient(ctx context.Context, idcliente int32) error {
 	return err
 }
 
+const deleteClientByName = `-- name: DeleteClientByName :exec
+DELETE FROM Cliente WHERE nombre = ?
+`
+
+func (q *Queries) DeleteClientByName(ctx context.Context, nombre string) error {
+	_, err := q.db.ExecContext(ctx, deleteClientByName, nombre)
+	return err
+}
+
 const getAllClients = `-- name: GetAllClients :many
 SELECT idcliente, nombre, correo, usuario, contraseña FROM Cliente
 `
@@ -79,6 +88,23 @@ SELECT idcliente, nombre, correo, usuario, contraseña FROM Cliente WHERE idClie
 
 func (q *Queries) GetClientById(ctx context.Context, idcliente int32) (Cliente, error) {
 	row := q.db.QueryRowContext(ctx, getClientById, idcliente)
+	var i Cliente
+	err := row.Scan(
+		&i.Idcliente,
+		&i.Nombre,
+		&i.Correo,
+		&i.Usuario,
+		&i.Contraseña,
+	)
+	return i, err
+}
+
+const getClientByName = `-- name: GetClientByName :one
+SELECT idcliente, nombre, correo, usuario, contraseña FROM Cliente WHERE nombre = ? LIMIT 1
+`
+
+func (q *Queries) GetClientByName(ctx context.Context, nombre string) (Cliente, error) {
+	row := q.db.QueryRowContext(ctx, getClientByName, nombre)
 	var i Cliente
 	err := row.Scan(
 		&i.Idcliente,

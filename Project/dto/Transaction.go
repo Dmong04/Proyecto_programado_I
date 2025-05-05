@@ -27,7 +27,7 @@ func (dbTransaction *DbTransaction) ExcTransaction(ctx context.Context, fn func(
 	err = fn(q)
 	if err != nil {
 		if rbError := tx.Rollback(); rbError != nil {
-			return fmt.Errorf("tx Error:%v, Rollback error:%v", err, rbError)
+			return fmt.Errorf("tx Error:%v, Rollback Error:%v", err, rbError)
 		}
 		return err
 	}

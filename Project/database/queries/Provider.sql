@@ -15,3 +15,6 @@ WHERE idProveedor = ?;
 
 -- name: DeleteProvider :exec
 DELETE FROM Proveedor WHERE idProveedor = ?;
+
+-- name: DeleteProviderByName :exec
+DELETE FROM Proveedor WHERE nombre = ?;
