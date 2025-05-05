@@ -50,58 +50,78 @@ func (q *Queries) DeleteAdminByName(ctx context.Context, nombre string) error {
 }
 
 const getAdminById = `-- name: GetAdminById :one
-SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador WHERE idAdministrador = ? LIMIT 1
+SELECT idAdministrador, nombre, correo, usuario
+ FROM Administrador WHERE idAdministrador = ? LIMIT 1
 `
 
-func (q *Queries) GetAdminById(ctx context.Context, idadministrador int32) (Administrador, error) {
+type GetAdminByIdRow struct {
+	Idadministrador int32  `json:"idadministrador"`
+	Nombre          string `json:"nombre"`
+	Correo          string `json:"correo"`
+	Usuario         string `json:"usuario"`
+}
+
+func (q *Queries) GetAdminById(ctx context.Context, idadministrador int32) (GetAdminByIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getAdminById, idadministrador)
-	var i Administrador
+	var i GetAdminByIdRow
 	err := row.Scan(
 		&i.Idadministrador,
 		&i.Nombre,
 		&i.Correo,
 		&i.Usuario,
-		&i.Contraseña,
 	)
 	return i, err
 }
 
 const getAdminByName = `-- name: GetAdminByName :one
-SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador WHERE nombre = ? LIMIT 1
+SELECT idAdministrador, nombre, correo, usuario 
+FROM Administrador WHERE nombre = ? LIMIT 1
 `
 
-func (q *Queries) GetAdminByName(ctx context.Context, nombre string) (Administrador, error) {
+type GetAdminByNameRow struct {
+	Idadministrador int32  `json:"idadministrador"`
+	Nombre          string `json:"nombre"`
+	Correo          string `json:"correo"`
+	Usuario         string `json:"usuario"`
+}
+
+func (q *Queries) GetAdminByName(ctx context.Context, nombre string) (GetAdminByNameRow, error) {
 	row := q.db.QueryRowContext(ctx, getAdminByName, nombre)
-	var i Administrador
+	var i GetAdminByNameRow
 	err := row.Scan(
 		&i.Idadministrador,
 		&i.Nombre,
 		&i.Correo,
 		&i.Usuario,
-		&i.Contraseña,
 	)
 	return i, err
 }
 
 const getAllAdmins = `-- name: GetAllAdmins :many
-SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador
+SELECT idAdministrador, nombre, correo, usuario FROM Administrador
 `
 
-func (q *Queries) GetAllAdmins(ctx context.Context) ([]Administrador, error) {
+type GetAllAdminsRow struct {
+	Idadministrador int32  `json:"idadministrador"`
+	Nombre          string `json:"nombre"`
+	Correo          string `json:"correo"`
+	Usuario         string `json:"usuario"`
+}
+
+func (q *Queries) GetAllAdmins(ctx context.Context) ([]GetAllAdminsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAllAdmins)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Administrador
+	var items []GetAllAdminsRow
 	for rows.Next() {
-		var i Administrador
+		var i GetAllAdminsRow
 		if err := rows.Scan(
 			&i.Idadministrador,
 			&i.Nombre,
 			&i.Correo,
 			&i.Usuario,
-			&i.Contraseña,
 		); err != nil {
 			return nil, err
 		}

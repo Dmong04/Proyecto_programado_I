@@ -1,11 +1,13 @@
 -- name: GetAllAdmins :many
-SELECT * FROM Administrador;
+SELECT idAdministrador, nombre, correo, usuario FROM Administrador;
 
 -- name: GetAdminById :one
-SELECT * FROM Administrador WHERE idAdministrador = ? LIMIT 1;
+SELECT idAdministrador, nombre, correo, usuario
+ FROM Administrador WHERE idAdministrador = ? LIMIT 1;
 
 -- name: GetAdminByName :one
-SELECT * FROM Administrador WHERE nombre = ? LIMIT 1;
+SELECT idAdministrador, nombre, correo, usuario 
+FROM Administrador WHERE nombre = ? LIMIT 1;
 
 -- name: CreateAdmin :execresult
 INSERT INTO Administrador (nombre, correo, usuario, contraseña)
