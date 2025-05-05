@@ -12,6 +12,7 @@ import (
 type Administrador struct {
 	Idadministrador int32  `json:"idadministrador"`
 	Nombre          string `json:"nombre"`
+	Correo          string `json:"correo"`
 	Usuario         string `json:"usuario"`
 	Contraseña      string `json:"contraseña"`
 }
@@ -26,7 +27,8 @@ type Cliente struct {
 
 type Detalleviaje struct {
 	Iddetalleviaje int32         `json:"iddetalleviaje"`
-	Tipoviaje      string        `json:"tipoviaje"`
+	Fecha          time.Time     `json:"fecha"`
+	Hora           time.Time     `json:"hora"`
 	Idproveedor    sql.NullInt32 `json:"idproveedor"`
 	Idviaje        int32         `json:"idviaje"`
 }
@@ -66,7 +68,6 @@ type Telefonocliente struct {
 }
 
 type Viaje struct {
-	Idviaje int32     `json:"idviaje"`
-	Fecha   time.Time `json:"fecha"`
-	Hora    time.Time `json:"hora"`
+	Idviaje   int32  `json:"idviaje"`
+	Tipoviaje string `json:"tipoviaje"`
 }
