@@ -34,6 +34,15 @@ func (q *Queries) DeletePassenger(ctx context.Context, idpasajeros int32) error 
 	return err
 }
 
+const deletePassengerByName = `-- name: DeletePassengerByName :exec
+DELETE FROM Pasajeros WHERE nombre = ?
+`
+
+func (q *Queries) DeletePassengerByName(ctx context.Context, nombre string) error {
+	_, err := q.db.ExecContext(ctx, deletePassengerByName, nombre)
+	return err
+}
+
 const getAllPassengers = `-- name: GetAllPassengers :many
 SELECT idpasajeros, nombre, edad, iddetalle FROM Pasajeros
 `
@@ -66,12 +75,60 @@ func (q *Queries) GetAllPassengers(ctx context.Context) ([]Pasajero, error) {
 	return items, nil
 }
 
+const getPassengersByDetailID = `-- name: GetPassengersByDetailID :many
+SELECT idpasajeros, nombre, edad, iddetalle FROM Pasajeros WHERE idDetalle = ?
+`
+
+func (q *Queries) GetPassengersByDetailID(ctx context.Context, iddetalle int32) ([]Pasajero, error) {
+	rows, err := q.db.QueryContext(ctx, getPassengersByDetailID, iddetalle)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Pasajero
+	for rows.Next() {
+		var i Pasajero
+		if err := rows.Scan(
+			&i.Idpasajeros,
+			&i.Nombre,
+			&i.Edad,
+			&i.Iddetalle,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPassengersById = `-- name: GetPassengersById :one
 SELECT idpasajeros, nombre, edad, iddetalle FROM Pasajeros WHERE idPasajeros = ? LIMIT 1
 `
 
 func (q *Queries) GetPassengersById(ctx context.Context, idpasajeros int32) (Pasajero, error) {
 	row := q.db.QueryRowContext(ctx, getPassengersById, idpasajeros)
+	var i Pasajero
+	err := row.Scan(
+		&i.Idpasajeros,
+		&i.Nombre,
+		&i.Edad,
+		&i.Iddetalle,
+	)
+	return i, err
+}
+
+const getPassengersByName = `-- name: GetPassengersByName :one
+SELECT idpasajeros, nombre, edad, iddetalle FROM Pasajeros WHERE nombre = ? LIMIT 1
+`
+
+func (q *Queries) GetPassengersByName(ctx context.Context, nombre string) (Pasajero, error) {
+	row := q.db.QueryRowContext(ctx, getPassengersByName, nombre)
 	var i Pasajero
 	err := row.Scan(
 		&i.Idpasajeros,

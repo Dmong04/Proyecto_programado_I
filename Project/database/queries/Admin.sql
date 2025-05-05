@@ -4,6 +4,9 @@ SELECT * FROM Administrador;
 -- name: GetAdminById :one
 SELECT * FROM Administrador WHERE idAdministrador = ? LIMIT 1;
 
+-- name: GetAdminByName :one
+SELECT * FROM Administrador WHERE nombre = ? LIMIT 1;
+
 -- name: CreateAdmin :execresult
 INSERT INTO Administrador (nombre, correo, usuario, contraseña)
 VALUES (?, ?, ?, ?);
@@ -18,3 +21,6 @@ WHERE idAdministrador = ?;
 
 -- name: DeleteAdmin :exec
 DELETE FROM Administrador WHERE idAdministrador = ?;
+
+-- name: DeleteAdminByName :exec
+DELETE FROM Administrador WHERE nombre = ?;

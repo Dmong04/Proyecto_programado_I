@@ -40,12 +40,38 @@ func (q *Queries) DeleteAdmin(ctx context.Context, idadministrador int32) error 
 	return err
 }
 
+const deleteAdminByName = `-- name: DeleteAdminByName :exec
+DELETE FROM Administrador WHERE nombre = ?
+`
+
+func (q *Queries) DeleteAdminByName(ctx context.Context, nombre string) error {
+	_, err := q.db.ExecContext(ctx, deleteAdminByName, nombre)
+	return err
+}
+
 const getAdminById = `-- name: GetAdminById :one
 SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador WHERE idAdministrador = ? LIMIT 1
 `
 
 func (q *Queries) GetAdminById(ctx context.Context, idadministrador int32) (Administrador, error) {
 	row := q.db.QueryRowContext(ctx, getAdminById, idadministrador)
+	var i Administrador
+	err := row.Scan(
+		&i.Idadministrador,
+		&i.Nombre,
+		&i.Correo,
+		&i.Usuario,
+		&i.Contraseña,
+	)
+	return i, err
+}
+
+const getAdminByName = `-- name: GetAdminByName :one
+SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador WHERE nombre = ? LIMIT 1
+`
+
+func (q *Queries) GetAdminByName(ctx context.Context, nombre string) (Administrador, error) {
+	row := q.db.QueryRowContext(ctx, getAdminByName, nombre)
 	var i Administrador
 	err := row.Scan(
 		&i.Idadministrador,
