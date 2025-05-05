@@ -1,11 +1,13 @@
 -- name: GetAllClients :many
-SELECT * FROM Cliente;
+SELECT idCliente, nombre, correo, usuario FROM Cliente;
 
 -- name: GetClientById :one
-SELECT * FROM Cliente WHERE idCliente = ? LIMIT 1;
+SELECT idCliente, nombre, correo, usuario 
+FROM Cliente WHERE idCliente = ? LIMIT 1;
 
 -- name: GetClientByName :one
-SELECT * FROM Cliente WHERE nombre = ? LIMIT 1;
+SELECT idCliente, nombre, correo, usuario 
+FROM Cliente WHERE nombre = ? LIMIT 1;
 
 -- name: CreateClient :execresult
 INSERT INTO Cliente (nombre, correo, usuario, contraseña)

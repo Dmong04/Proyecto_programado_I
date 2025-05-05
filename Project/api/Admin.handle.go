@@ -8,6 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func (server *Server) GetAllAdmins(ctx *gin.Context) {
+	admins, err := server.dbtx.GetAllAdmins(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, admins)
+}
+
 type createAdminRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Email    string `json:"email" binding:"required"`
@@ -36,7 +45,7 @@ func (server *Server) CreateAdmin(ctx *gin.Context) {
 }
 
 type getAdminByIDRequest struct {
-	ID int32 `json:"id" binding:"required, min = 1"`
+	ID int32 `json:"id" binding:"required,min=1"`
 }
 
 func (server *Server) GetCategoryByID(ctx *gin.Context) {
@@ -59,7 +68,7 @@ func (server *Server) GetCategoryByID(ctx *gin.Context) {
 
 // Obtener al usuario admin por nombre
 type getAdminByNameRequest struct {
-	Nombre string `json:"name" binding:"required, min = 1"`
+	Nombre string `json:"name" binding:"required,min=1"`
 }
 
 func (server *Server) GetAdminByName(ctx *gin.Context) {
@@ -84,14 +93,10 @@ type updateAdminRequest struct {
 	ID int32 `json:"id" binding:"required"`
 }
 
-type updateAdminPasswordParam struct {
-	Password string `json:"password" binding:"required"`
-}
-
 type updateAdminBody struct {
-	Name  string `json:"name" binding:"required, min= 1"`
-	Email string `json:"email" binding:"required, email"`
-	User  string `json:"user" binding:"required, user"`
+	Name  string `json:"name" binding:"required,min=1"`
+	Email string `json:"email" binding:"required,email"`
+	User  string `json:"user" binding:"required,alphanum"`
 }
 
 func (server *Server) UpdateAdmin(ctx *gin.Context) {
@@ -119,6 +124,11 @@ func (server *Server) UpdateAdmin(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador modificado con éxito"})
 }
 
+type updateAdminPasswordParam struct {
+	ID       int32  `json:"id" binding:"required,min=1"`
+	Password string `json:"password" binding:"required"`
+}
+
 func (server *Server) UpdateAdminPassword(ctx *gin.Context) {
 	var req updateAdminRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
@@ -131,7 +141,8 @@ func (server *Server) UpdateAdminPassword(ctx *gin.Context) {
 		return
 	}
 	param := dto.UpdateAdminPasswordParams{
-		Contraseña: pswrdReq.Password,
+		Idadministrador: pswrdReq.ID,
+		Contraseña:      pswrdReq.Password,
 	}
 	err := server.dbtx.UpdateAdminPassword(ctx, param)
 	if err != nil {
