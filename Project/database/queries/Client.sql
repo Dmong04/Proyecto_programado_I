@@ -4,6 +4,9 @@ SELECT * FROM Cliente;
 -- name: GetClientById :one
 SELECT * FROM Cliente WHERE idCliente = ? LIMIT 1;
 
+-- name: GetClientByName :one
+SELECT * FROM Cliente WHERE nombre = ? LIMIT 1;
+
 -- name: CreateClient :execresult
 INSERT INTO Cliente (nombre, correo, usuario, contraseña)
 VALUES (?, ?, ?, ?);
@@ -19,3 +22,6 @@ WHERE idCliente = ?;
 
 -- name: DeleteClient :exec
 DELETE FROM Cliente WHERE idCliente = ?;
+
+-- name: DeleteClientByName :exec
+DELETE FROM Cliente WHERE nombre = ?;

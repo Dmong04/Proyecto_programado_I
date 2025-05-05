@@ -33,6 +33,15 @@ func (q *Queries) DeleteProvider(ctx context.Context, idproveedor int32) error {
 	return err
 }
 
+const deleteProviderByName = `-- name: DeleteProviderByName :exec
+DELETE FROM Proveedor WHERE nombre = ?
+`
+
+func (q *Queries) DeleteProviderByName(ctx context.Context, nombre string) error {
+	_, err := q.db.ExecContext(ctx, deleteProviderByName, nombre)
+	return err
+}
+
 const getAllProviders = `-- name: GetAllProviders :many
 SELECT idproveedor, nombre, descrip FROM Proveedor
 `
