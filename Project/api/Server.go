@@ -35,6 +35,9 @@ func NewServer(dbtx *dto.DbTransaction) *Server {
 	// CRUD DetalleViajes
 	router.GET("api/v1/Details", server.getAllDetails)
 	router.GET("api/v1/Details:id", server.getDetailsByID)
+	router.POST("api/v1/Details", server.CreateDetail)
+	router.PATCH("api/v1/Details:id", server.UpdateDetail)
+	router.DELETE("api/v1/Details:id", server.DeleteDetail)
 	// Rutas (Endpoints) De la API
 	server.router = router
 	return server
