@@ -101,7 +101,7 @@ type updateAdminBody struct {
 
 func (server *Server) UpdateAdmin(ctx *gin.Context) {
 	var req updateAdminRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -158,12 +158,16 @@ type deleteAdminRequest struct {
 
 func (server *Server) DeleteAdmin(ctx *gin.Context) {
 	var req deleteAdminRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	err := server.dbtx.DeleteAdmin(ctx, req.ID)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
