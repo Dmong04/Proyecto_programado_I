@@ -34,15 +34,6 @@ func (q *Queries) DeletePassenger(ctx context.Context, idpasajeros int32) error 
 	return err
 }
 
-const deletePassengerByName = `-- name: DeletePassengerByName :exec
-DELETE FROM Pasajeros WHERE nombre = ?
-`
-
-func (q *Queries) DeletePassengerByName(ctx context.Context, nombre string) error {
-	_, err := q.db.ExecContext(ctx, deletePassengerByName, nombre)
-	return err
-}
-
 const getAllPassengers = `-- name: GetAllPassengers :many
 SELECT idpasajeros, nombre, edad, iddetalle FROM Pasajeros
 `
