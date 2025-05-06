@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// =================================================================
+
 func (server *Server) GetAllAdmins(ctx *gin.Context) {
 	admins, err := server.dbtx.GetAllAdmins(ctx)
 	if err != nil {
@@ -16,6 +18,8 @@ func (server *Server) GetAllAdmins(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, admins)
 }
+
+// =================================================================
 
 type createAdminRequest struct {
 	Name     string `json:"name" binding:"required"`
@@ -44,50 +48,7 @@ func (server *Server) CreateAdmin(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, admin)
 }
 
-type getAdminByIDRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
-}
-
-func (server *Server) GetCategoryByID(ctx *gin.Context) {
-	var req getAdminByIDRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	admin, err := server.dbtx.GetAdminById(ctx, req.ID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, admin)
-}
-
-// Obtener al usuario admin por nombre
-type getAdminByNameRequest struct {
-	Nombre string `json:"name" binding:"required,min=1"`
-}
-
-func (server *Server) GetAdminByName(ctx *gin.Context) {
-	var req getAdminByNameRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	admin, err := server.dbtx.GetAdminByName(ctx, req.Nombre)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, admin)
-}
+// =================================================================
 
 type updateAdminRequest struct {
 	ID int32 `json:"id" binding:"required"`
@@ -152,6 +113,8 @@ func (server *Server) UpdateAdminPassword(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Contraseña modificada con éxito"})
 }
 
+// =================================================================
+
 type deleteAdminRequest struct {
 	ID int32 `json:"id" binding:"required"`
 }
@@ -191,3 +154,55 @@ func (server *Server) DeleteAdminByName(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador eliminado con éxito"})
 }
+
+// =================================================================
+
+// ===========================Gets==================================
+
+type getAdminByIDRequest struct {
+	ID int32 `json:"id" binding:"required,min=1"`
+}
+
+func (server *Server) GetCategoryByID(ctx *gin.Context) {
+	var req getAdminByIDRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	admin, err := server.dbtx.GetAdminById(ctx, req.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, admin)
+}
+
+// =================================================================
+
+type getAdminByNameRequest struct {
+	Nombre string `json:"name" binding:"required,min=1"`
+}
+
+func (server *Server) GetAdminByName(ctx *gin.Context) {
+	var req getAdminByNameRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	admin, err := server.dbtx.GetAdminByName(ctx, req.Nombre)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, admin)
+}
+
+//=================================================================

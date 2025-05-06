@@ -8,6 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// =====================================================
+
 func (server *Server) GetAllReservations(ctx *gin.Context) {
 
 	reservations, err := server.dbtx.GetAllReservations(ctx)
@@ -20,6 +22,7 @@ func (server *Server) GetAllReservations(ctx *gin.Context) {
 }
 
 // =====================================================
+
 type createReservationRequest struct {
 	ClientID        int32 `json:"idclient" binding:"required"`
 	AdministratorID int32 `json:"idadministrator" binding:"required"`
@@ -50,6 +53,7 @@ func (server *Server) CreateReservation(ctx *gin.Context) {
 }
 
 // =====================================================
+
 type updateReservationRequest struct {
 	ID int32 `json:"id" binding:"required"`
 }
@@ -112,6 +116,9 @@ func (server *Server) DeleteReservation(ctx *gin.Context) {
 }
 
 // =====================================================
+
+// ===========================Gets=======================
+
 type getReservationByIdRequest struct {
 	ID int32 `json:"id" binding:"required,min=1"`
 }

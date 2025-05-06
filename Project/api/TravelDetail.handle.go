@@ -10,36 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) getAllDetails(ctx *gin.Context) {
-	details, err := server.dbtx.GetAllTravelDetails(ctx)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, details)
-}
-
-type getDetailsByIDRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
-}
-
-func (server *Server) getDetailsByID(ctx *gin.Context) {
-	var request getDetailsByIDRequest
-	if err := ctx.ShouldBindUri(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	detail, err := server.dbtx.GetTravelDetailById(ctx, request.ID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, detail)
-}
+// =====================================================
 
 type onlyDate struct {
 	time.Time
@@ -69,6 +40,18 @@ func (hour *onlyTime) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// =====================================================
+func (server *Server) getAllDetails(ctx *gin.Context) {
+	details, err := server.dbtx.GetAllTravelDetails(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, details)
+}
+
+// =====================================================
+
 type createDetailsRequest struct {
 	Fecha       onlyDate      `json:"date" binding:"required"`
 	Hora        onlyTime      `json:"time" binding:"required"`
@@ -95,6 +78,8 @@ func (server *Server) CreateDetail(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, detail)
 }
+
+// =====================================================
 
 type updateDetailrequest struct {
 	ID int32 `json:"id" binding:"required"`
@@ -132,6 +117,8 @@ func (server *Server) UpdateDetail(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "detalles del viaje actualizados con éxito"})
 }
 
+//=======================================================
+
 type deleteDetailRequest struct {
 	ID int32 `json:"id" binding:"required"`
 }
@@ -153,3 +140,31 @@ func (server *Server) DeleteDetail(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Detalles del viaje eliminados con éxito"})
 }
+
+//=======================================================
+
+// ===========================Gets=======================
+
+type getDetailsByIDRequest struct {
+	ID int32 `json:"id" binding:"required,min=1"`
+}
+
+func (server *Server) getDetailsByID(ctx *gin.Context) {
+	var request getDetailsByIDRequest
+	if err := ctx.ShouldBindUri(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	detail, err := server.dbtx.GetTravelDetailById(ctx, request.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, detail)
+}
+
+// =====================================================
