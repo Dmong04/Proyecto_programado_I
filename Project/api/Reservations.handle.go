@@ -88,7 +88,7 @@ func (server *Server) UpdateReservations(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Reserva actualizado con éxito"})
+	ctx.JSON(http.StatusOK, gin.H{"message": " La reserva  se ha actualizado con éxito"})
 }
 
 // =====================================================
@@ -112,7 +112,7 @@ func (server *Server) DeleteReservation(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Reserva eliminado con éxito"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Reserva eliminada con éxito"})
 }
 
 // =====================================================
