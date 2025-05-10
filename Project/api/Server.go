@@ -42,11 +42,11 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.PATCH("/api/v1/Passengers/update/:id", server.UpdatePassengers)
 	router.DELETE("/api/v1/Passengers/delete/:id", server.DeletePassenger)
 	// CRUD DetalleViajes
-	router.GET("api/v1/Details", server.getAllDetails)
-	router.GET("api/v1/Details:id", server.getDetailsByID)
+	router.GET("api/v1/Details/all", server.getAllDetails)
+	router.GET("api/v1/Details/id/:id", server.getDetailsByID)
 	router.POST("api/v1/Details", server.CreateDetail)
-	router.PATCH("api/v1/Details:id", server.UpdateDetail)
-	router.DELETE("api/v1/Details:id", server.DeleteDetail)
+	router.PATCH("api/v1/Details/update/:id", server.UpdateDetail)
+	router.DELETE("api/v1/Details/delete/:id", server.DeleteDetail)
 	// CRUD Client
 	router.POST("api/v1/Client", server.CreateClient)
 	router.GET("api/v1/Client:id", server.GetClientByID)
