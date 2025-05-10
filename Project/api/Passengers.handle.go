@@ -8,8 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//=================================================================
-
 func (server *Server) GetAllPassengers(ctx *gin.Context) {
 	passengers, err := server.dbtx.GetAllPassengers(ctx)
 	if err != nil {
@@ -19,7 +17,27 @@ func (server *Server) GetAllPassengers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, passengers)
 }
 
-//=================================================================
+type getPassengersByDetailIDRequest struct {
+	DetailID int32 `uri:"idDetail" binding:"required"`
+}
+
+func (server *Server) GetPassengersByDetailID(ctx *gin.Context) {
+	var request getPassengersByDetailIDRequest
+	if err := ctx.ShouldBindUri(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	passengers, err := server.dbtx.GetPassengersByDetailID(ctx, request.DetailID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, passengers)
+}
 
 type createPassengersRequest struct {
 	Name     string `json:"name" binding:"required"`
@@ -46,10 +64,52 @@ func (server *Server) CreatePassenger(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, passenger)
 }
 
-//=================================================================
+type getPassengersByIdRequest struct {
+	ID int32 `uri:"id" binding:"required,min=1"`
+}
+
+func (server *Server) GetPassengersById(ctx *gin.Context) {
+	var request getPassengersByIdRequest
+	if err := ctx.ShouldBindUri(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	passenger, err := server.dbtx.GetPassengersById(ctx, request.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, passenger)
+}
+
+type getPassengersByNameRequest struct {
+	Name string `uri:"name" binding:"required,min=1"`
+}
+
+func (server *Server) GetPassengersByName(ctx *gin.Context) {
+	var request getPassengersByNameRequest
+	if err := ctx.ShouldBindUri(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	passenger, err := server.dbtx.GetPassengersByName(ctx, request.Name)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, passenger)
+}
 
 type updatePassengerRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 type updatePassengerBodyRequest struct {
@@ -60,7 +120,7 @@ type updatePassengerBodyRequest struct {
 
 func (server *Server) UpdatePassengers(ctx *gin.Context) {
 	var request updatePassengerRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -83,15 +143,13 @@ func (server *Server) UpdatePassengers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"message": "Pasajero actualizado con éxito"})
 }
 
-//=================================================================
-
 type deletePassengerRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 func (server *Server) DeletePassenger(ctx *gin.Context) {
 	var request deletePassengerRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -105,78 +163,4 @@ func (server *Server) DeletePassenger(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": "Pasajero eliminado con éxito"})
-}
-
-//=================================================================
-
-// ===========================Gets==================================
-
-type getPassengersByDetailIDRequest struct {
-	DetailID int32 `json:"idDetail" binding:"required"`
-}
-
-func (server *Server) GetPassengersByDetailID(ctx *gin.Context) {
-	var request getPassengersByDetailIDRequest
-	if err := ctx.ShouldBindUri(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	passengers, err := server.dbtx.GetPassengersByDetailID(ctx, request.DetailID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, passengers)
-}
-
-// =================================================================
-
-type getPassengersByIdRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
-}
-
-func (server *Server) GetPassengersById(ctx *gin.Context) {
-	var request getPassengersByIdRequest
-	if err := ctx.ShouldBindUri(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	passenger, err := server.dbtx.GetPassengersById(ctx, request.ID)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, passenger)
-}
-
-//=================================================================
-
-type getPassengersByNameRequest struct {
-	Name string `json:"name" binding:"required,min=1"`
-}
-
-func (server *Server) GetPassengersByName(ctx *gin.Context) {
-	var request getPassengersByNameRequest
-	if err := ctx.ShouldBindUri(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	passenger, err := server.dbtx.GetPassengersByName(ctx, request.Name)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, passenger)
 }
