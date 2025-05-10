@@ -13,16 +13,16 @@ FROM Administrador WHERE nombre = ? LIMIT 1;
 INSERT INTO Administrador (nombre, correo, usuario, contraseña)
 VALUES (?, ?, ?, ?);
 
--- name: UpdateAdmin :exec
+-- name: UpdateAdmin :execresult
 UPDATE Administrador
 SET nombre = ?, correo = ?, usuario = ? WHERE idAdministrador = ?;
 
--- name: UpdateAdminPassword :exec
+-- name: UpdateAdminPassword :execresult
 UPDATE Administrador SET contraseña = ? 
 WHERE idAdministrador = ?;
 
--- name: DeleteAdmin :exec
+-- name: DeleteAdmin :execresult
 DELETE FROM Administrador WHERE idAdministrador = ?;
 
--- name: DeleteAdminByName :exec
+-- name: DeleteAdminByName :execresult
 DELETE FROM Administrador WHERE nombre = ?;

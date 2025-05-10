@@ -18,7 +18,7 @@ func (server *Server) GetAllPassengers(ctx *gin.Context) {
 }
 
 type getPassengersByDetailIDRequest struct {
-	DetailID int32 `json:"idDetail" binding:"required"`
+	DetailID int32 `uri:"idDetail" binding:"required"`
 }
 
 func (server *Server) GetPassengersByDetailID(ctx *gin.Context) {
@@ -65,7 +65,7 @@ func (server *Server) CreatePassenger(ctx *gin.Context) {
 }
 
 type getPassengersByIdRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
+	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) GetPassengersById(ctx *gin.Context) {
@@ -87,7 +87,7 @@ func (server *Server) GetPassengersById(ctx *gin.Context) {
 }
 
 type getPassengersByNameRequest struct {
-	Name string `json:"name" binding:"required,min=1"`
+	Name string `uri:"name" binding:"required,min=1"`
 }
 
 func (server *Server) GetPassengersByName(ctx *gin.Context) {
@@ -109,7 +109,7 @@ func (server *Server) GetPassengersByName(ctx *gin.Context) {
 }
 
 type updatePassengerRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 type updatePassengerBodyRequest struct {
@@ -120,7 +120,7 @@ type updatePassengerBodyRequest struct {
 
 func (server *Server) UpdatePassengers(ctx *gin.Context) {
 	var request updatePassengerRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -144,12 +144,12 @@ func (server *Server) UpdatePassengers(ctx *gin.Context) {
 }
 
 type deletePassengerRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 func (server *Server) DeletePassenger(ctx *gin.Context) {
 	var request deletePassengerRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
