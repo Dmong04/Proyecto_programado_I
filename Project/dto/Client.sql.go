@@ -31,22 +31,20 @@ func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (sql
 	)
 }
 
-const deleteClient = `-- name: DeleteClient :exec
+const deleteClient = `-- name: DeleteClient :execresult
 DELETE FROM Cliente WHERE idCliente = ?
 `
 
-func (q *Queries) DeleteClient(ctx context.Context, idcliente int32) error {
-	_, err := q.db.ExecContext(ctx, deleteClient, idcliente)
-	return err
+func (q *Queries) DeleteClient(ctx context.Context, idcliente int32) (sql.Result, error) {
+	return q.db.ExecContext(ctx, deleteClient, idcliente)
 }
 
-const deleteClientByName = `-- name: DeleteClientByName :exec
+const deleteClientByName = `-- name: DeleteClientByName :execresult
 DELETE FROM Cliente WHERE nombre = ?
 `
 
-func (q *Queries) DeleteClientByName(ctx context.Context, nombre string) error {
-	_, err := q.db.ExecContext(ctx, deleteClientByName, nombre)
-	return err
+func (q *Queries) DeleteClientByName(ctx context.Context, nombre string) (sql.Result, error) {
+	return q.db.ExecContext(ctx, deleteClientByName, nombre)
 }
 
 const getAllClients = `-- name: GetAllClients :many
@@ -136,7 +134,7 @@ func (q *Queries) GetClientByName(ctx context.Context, nombre string) (GetClient
 	return i, err
 }
 
-const updateClient = `-- name: UpdateClient :exec
+const updateClient = `-- name: UpdateClient :execresult
 UPDATE Cliente
 SET nombre = ?, correo = ?, usuario = ?
 WHERE idCliente = ?
@@ -149,17 +147,16 @@ type UpdateClientParams struct {
 	Idcliente int32  `json:"idcliente"`
 }
 
-func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) error {
-	_, err := q.db.ExecContext(ctx, updateClient,
+func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateClient,
 		arg.Nombre,
 		arg.Correo,
 		arg.Usuario,
 		arg.Idcliente,
 	)
-	return err
 }
 
-const updateClientPassword = `-- name: updateClientPassword :exec
+const updateClientPassword = `-- name: UpdateClientPassword :execresult
 UPDATE Cliente SET contraseña = ? 
 WHERE idCliente = ?
 `
@@ -169,7 +166,6 @@ type UpdateClientPasswordParams struct {
 	Idcliente  int32  `json:"idcliente"`
 }
 
-func (q *Queries) UpdateClientPassword(ctx context.Context, arg UpdateClientPasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updateClientPassword, arg.Contraseña, arg.Idcliente)
-	return err
+func (q *Queries) UpdateClientPassword(ctx context.Context, arg UpdateClientPasswordParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateClientPassword, arg.Contraseña, arg.Idcliente)
 }

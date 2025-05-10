@@ -114,12 +114,12 @@ func (server *Server) UpdateClient(ctx *gin.Context) {
 		Usuario:   bodyReq.User,
 		Idcliente: req.ID,
 	}
-	err := server.dbtx.UpdateClient(ctx, params)
+	success, err := server.dbtx.UpdateClient(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente se modificado con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }
 
 type updateClientPasswordParam struct {
@@ -142,12 +142,12 @@ func (server *Server) UpdateClientPassword(ctx *gin.Context) {
 		Idcliente:  pswrdReq.ID,
 		Contraseña: pswrdReq.Password,
 	}
-	err := server.dbtx.UpdateClientPassword(ctx, param)
+	success, err := server.dbtx.UpdateClientPassword(ctx, param)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Contraseña de cliente modificada con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }
 
 type deleteClientRequest struct {
@@ -160,7 +160,7 @@ func (server *Server) DeleteClient(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	err := server.dbtx.DeleteClient(ctx, req.ID)
+	success, err := server.dbtx.DeleteClient(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -169,7 +169,7 @@ func (server *Server) DeleteClient(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente fue eliminado con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }
 
 type deleteClientByNameRequest struct {
@@ -182,10 +182,10 @@ func (server *Server) DeleteClientByName(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	err := server.dbtx.DeleteClientByName(ctx, req.Name)
+	success, err := server.dbtx.DeleteClientByName(ctx, req.Name)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente eliminado con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }

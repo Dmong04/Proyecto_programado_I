@@ -6,7 +6,6 @@ package dto
 
 import (
 	"database/sql"
-	"time"
 )
 
 type Administrador struct {
@@ -27,8 +26,8 @@ type Cliente struct {
 
 type Detalleviaje struct {
 	Iddetalleviaje int32         `json:"iddetalleviaje"`
-	Fecha          time.Time     `json:"fecha"`
-	Hora           time.Time     `json:"hora"`
+	Fecha          string        `json:"fecha"`
+	Hora           string        `json:"hora"`
 	Idproveedor    sql.NullInt32 `json:"idproveedor"`
 	Idviaje        int32         `json:"idviaje"`
 }
