@@ -52,8 +52,8 @@ CREATE TABLE IF NOT EXISTS `Viaje` (
 -- Tabla: detalleViaje
 CREATE TABLE IF NOT EXISTS `detalleViaje` (
   `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
-  `fecha` DATE NOT NULL,
-  `hora` TIME NOT NULL,
+  `fecha` VARCHAR(10) NOT NULL,
+  `hora` VARCHAR(10) NOT NULL,
   `idProveedor` INT DEFAULT NULL,
   `idViaje` INT NOT NULL,
   PRIMARY KEY (`idDetalleViaje`),

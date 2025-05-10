@@ -115,12 +115,12 @@ func (server *Server) UpdateAdmin(ctx *gin.Context) {
 		Usuario:         bodyReq.User,
 		Idadministrador: req.ID,
 	}
-	err := server.dbtx.UpdateAdmin(ctx, params)
+	success, err := server.dbtx.UpdateAdmin(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador modificado con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }
 
 type updateAdminPasswordParam struct {
@@ -146,12 +146,12 @@ func (server *Server) UpdateAdminPassword(ctx *gin.Context) {
 		Contraseña:      pswrdReq.Password,
 		Idadministrador: uri.ID,
 	}
-	err := server.dbtx.UpdateAdminPassword(ctx, param)
+	success, err := server.dbtx.UpdateAdminPassword(ctx, param)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Contraseña modificada con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }
 
 type deleteAdminRequest struct {
@@ -164,7 +164,7 @@ func (server *Server) DeleteAdmin(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	err := server.dbtx.DeleteAdmin(ctx, req.ID)
+	success, err := server.dbtx.DeleteAdmin(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -173,7 +173,7 @@ func (server *Server) DeleteAdmin(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador eliminado con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }
 
 type deleteAdminByNameRequest struct {
@@ -186,10 +186,10 @@ func (server *Server) DeleteAdminByName(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	err := server.dbtx.DeleteAdminByName(ctx, req.Name)
+	success, err := server.dbtx.DeleteAdminByName(ctx, req.Name)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador eliminado con éxito"})
+	ctx.JSON(http.StatusOK, success)
 }
