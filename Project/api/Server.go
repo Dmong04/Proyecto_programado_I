@@ -60,7 +60,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.POST("api/v1/Travel", server.CreateTravel)
 	router.GET("api/v1/Travel/all", server.GetAllTravels)
 	router.GET("api/v1/Travel/:id", server.GetTravelById)
-	router.DELETE("api/v1/Travel/:id", server.DeleteTravel)
+	router.DELETE("api/v1/Travel/delete/:id", server.DeleteTravel)
 	router.PATCH("api/v1/Travel/update/:id", server.UpdateTravel)
 	// Rutas (Endpoints) De la API
 	server.router = router
