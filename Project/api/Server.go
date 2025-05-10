@@ -37,7 +37,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.GET("/api/v1/Passengers/all", server.GetAllPassengers)
 	router.POST("/api/v1/Passengers", server.CreatePassenger)
 	router.GET("/api/v1/Passengers/:id", server.GetPassengersById)
-	router.GET("/api/v1/Passengers/detail/:detailId", server.GetPassengersByDetailID)
+	router.GET("/api/v1/Passengers/detail/:detail_id", server.GetPassengersByDetailID)
 	router.GET("/api/v1/Passengers/name/:name", server.GetPassengersByName)
 	router.PATCH("/api/v1/Passengers/update/:id", server.UpdatePassengers)
 	router.DELETE("/api/v1/Passengers/delete/:id", server.DeletePassenger)
