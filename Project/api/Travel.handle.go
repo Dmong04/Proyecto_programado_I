@@ -10,7 +10,6 @@ import (
 
 type CreateTravelRequest struct {
 	Tipoviaje string `json:"tipoviaje"`
-	idViaje   int32  `json:"idviaje"`
 }
 
 func (server *Server) CreateTravel(ctx *gin.Context) {
