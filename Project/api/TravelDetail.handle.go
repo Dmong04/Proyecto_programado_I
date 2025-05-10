@@ -20,7 +20,7 @@ func (server *Server) getAllDetails(ctx *gin.Context) {
 }
 
 type getDetailsByIDRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
+	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) getDetailsByID(ctx *gin.Context) {
@@ -97,7 +97,7 @@ func (server *Server) CreateDetail(ctx *gin.Context) {
 }
 
 type updateDetailrequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 type updateDetailBodyrequest struct {
 	Fecha       onlyDate      `json:"date" binding:"required"`
@@ -108,7 +108,7 @@ type updateDetailBodyrequest struct {
 
 func (server *Server) UpdateDetail(ctx *gin.Context) {
 	var request updateDetailrequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -133,12 +133,12 @@ func (server *Server) UpdateDetail(ctx *gin.Context) {
 }
 
 type deleteDetailRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 func (server *Server) DeleteDetail(ctx *gin.Context) {
 	var request deleteDetailRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
