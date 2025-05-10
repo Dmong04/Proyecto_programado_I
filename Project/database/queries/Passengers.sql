@@ -21,6 +21,3 @@ WHERE idPasajeros = ?;
 
 -- name: DeletePassenger :exec
 DELETE FROM Pasajeros WHERE idPasajeros = ?;
-
--- name: DeletePassengerByName :exec
-DELETE FROM Pasajeros WHERE nombre = ?;
