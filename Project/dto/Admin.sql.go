@@ -31,22 +31,20 @@ func (q *Queries) CreateAdmin(ctx context.Context, arg CreateAdminParams) (sql.R
 	)
 }
 
-const deleteAdmin = `-- name: DeleteAdmin :exec
+const deleteAdmin = `-- name: DeleteAdmin :execresult
 DELETE FROM Administrador WHERE idAdministrador = ?
 `
 
-func (q *Queries) DeleteAdmin(ctx context.Context, idadministrador int32) error {
-	_, err := q.db.ExecContext(ctx, deleteAdmin, idadministrador)
-	return err
+func (q *Queries) DeleteAdmin(ctx context.Context, idadministrador int32) (sql.Result, error) {
+	return q.db.ExecContext(ctx, deleteAdmin, idadministrador)
 }
 
-const deleteAdminByName = `-- name: DeleteAdminByName :exec
+const deleteAdminByName = `-- name: DeleteAdminByName :execresult
 DELETE FROM Administrador WHERE nombre = ?
 `
 
-func (q *Queries) DeleteAdminByName(ctx context.Context, nombre string) error {
-	_, err := q.db.ExecContext(ctx, deleteAdminByName, nombre)
-	return err
+func (q *Queries) DeleteAdminByName(ctx context.Context, nombre string) (sql.Result, error) {
+	return q.db.ExecContext(ctx, deleteAdminByName, nombre)
 }
 
 const getAdminById = `-- name: GetAdminById :one
@@ -136,7 +134,7 @@ func (q *Queries) GetAllAdmins(ctx context.Context) ([]GetAllAdminsRow, error) {
 	return items, nil
 }
 
-const updateAdmin = `-- name: UpdateAdmin :exec
+const updateAdmin = `-- name: UpdateAdmin :execresult
 UPDATE Administrador
 SET nombre = ?, correo = ?, usuario = ? WHERE idAdministrador = ?
 `
@@ -148,17 +146,16 @@ type UpdateAdminParams struct {
 	Idadministrador int32  `json:"idadministrador"`
 }
 
-func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) error {
-	_, err := q.db.ExecContext(ctx, updateAdmin,
+func (q *Queries) UpdateAdmin(ctx context.Context, arg UpdateAdminParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateAdmin,
 		arg.Nombre,
 		arg.Correo,
 		arg.Usuario,
 		arg.Idadministrador,
 	)
-	return err
 }
 
-const updateAdminPassword = `-- name: UpdateAdminPassword :exec
+const updateAdminPassword = `-- name: UpdateAdminPassword :execresult
 UPDATE Administrador SET contraseña = ? 
 WHERE idAdministrador = ?
 `
@@ -168,7 +165,6 @@ type UpdateAdminPasswordParams struct {
 	Idadministrador int32  `json:"idadministrador"`
 }
 
-func (q *Queries) UpdateAdminPassword(ctx context.Context, arg UpdateAdminPasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updateAdminPassword, arg.Contraseña, arg.Idadministrador)
-	return err
+func (q *Queries) UpdateAdminPassword(ctx context.Context, arg UpdateAdminPasswordParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateAdminPassword, arg.Contraseña, arg.Idadministrador)
 }
