@@ -8,7 +8,6 @@ package dto
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createTravelDetail = `-- name: CreateTravelDetail :execresult
@@ -17,8 +16,8 @@ VALUES (?, ?, ?, ?)
 `
 
 type CreateTravelDetailParams struct {
-	Fecha       time.Time     `json:"fecha"`
-	Hora        time.Time     `json:"hora"`
+	Fecha       string        `json:"fecha"`
+	Hora        string        `json:"hora"`
 	Idproveedor sql.NullInt32 `json:"idproveedor"`
 	Idviaje     int32         `json:"idviaje"`
 }
@@ -98,8 +97,8 @@ WHERE idDetalleViaje = ?
 `
 
 type UpdateTravelDetailParams struct {
-	Fecha          time.Time     `json:"fecha"`
-	Hora           time.Time     `json:"hora"`
+	Fecha          string        `json:"fecha"`
+	Hora           string        `json:"hora"`
 	Idproveedor    sql.NullInt32 `json:"idproveedor"`
 	Idviaje        int32         `json:"idviaje"`
 	Iddetalleviaje int32         `json:"iddetalleviaje"`
