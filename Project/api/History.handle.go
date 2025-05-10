@@ -43,7 +43,7 @@ func (server *Server) CreateHistory(ctx *gin.Context) {
 }
 
 type getHistoryByIDRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
+	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) GetHistoryByID(ctx *gin.Context) {
@@ -65,7 +65,7 @@ func (server *Server) GetHistoryByID(ctx *gin.Context) {
 }
 
 type updateHistoryRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 type updateHistoryBody struct {
@@ -100,7 +100,7 @@ func (server *Server) UpdateHistory(ctx *gin.Context) {
 }
 
 type deleteHistoryRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 func (server *Server) DeleteHistory(ctx *gin.Context) {

@@ -42,7 +42,7 @@ func (server *Server) CreateProvider(ctx *gin.Context) {
 }
 
 type getProviderByIDRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
+	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) GetProviderByID(ctx *gin.Context) {
@@ -64,7 +64,7 @@ func (server *Server) GetProviderByID(ctx *gin.Context) {
 }
 
 type getProviderByNameRequest struct {
-	Nombre string `json:"name" binding:"required,min=1"`
+	Nombre string `uri:"name" binding:"required,min=1"`
 }
 
 func (server *Server) GetProviderByName(ctx *gin.Context) {
@@ -86,7 +86,7 @@ func (server *Server) GetProviderByName(ctx *gin.Context) {
 }
 
 type updateProviderRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 type updateProviderBody struct {
@@ -119,7 +119,7 @@ func (server *Server) UpdateProvider(ctx *gin.Context) {
 }
 
 type updateProviderByNameRequest struct {
-	Name string `json:"name" binding:"required"`
+	Name string `uri:"name" binding:"required"`
 }
 
 type updateProviderByNameBody struct {
@@ -152,7 +152,7 @@ func (server *Server) UpdateProviderByName(ctx *gin.Context) {
 }
 
 type deleteProviderRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 func (server *Server) DeleteProvider(ctx *gin.Context) {
@@ -170,7 +170,7 @@ func (server *Server) DeleteProvider(ctx *gin.Context) {
 }
 
 type deleteProviderByNameRequest struct {
-	Name string `json:"name" binding:"required"`
+	Name string `uri:"name" binding:"required"`
 }
 
 func (server *Server) DeleteProviderByName(ctx *gin.Context) {
