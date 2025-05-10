@@ -18,10 +18,10 @@ func (server *Server) GetAllClients(ctx *gin.Context) {
 }
 
 type CreateClientRequest struct {
-	Nombre     string `json:"nombre"`
-	Correo     string `json:"correo"`
-	Usuario    string `json:"usuario"`
-	Contraseña string `json:"contraseña"`
+	Nombre     string `json:"name"`
+	Correo     string `json:"email"`
+	Usuario    string `json:"user"`
+	Contraseña string `json:"password"`
 }
 
 func (server *Server) CreateClient(ctx *gin.Context) {
