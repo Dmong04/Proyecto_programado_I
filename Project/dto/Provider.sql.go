@@ -80,6 +80,17 @@ func (q *Queries) GetProviderById(ctx context.Context, idproveedor int32) (Prove
 	return i, err
 }
 
+const getProviderByName = `-- name: GetProviderByName :one
+SELECT idproveedor, nombre, descrip FROM Proveedor WHERE nombre = ? LIMIT 1
+`
+
+func (q *Queries) GetProviderByName(ctx context.Context, nombre string) (Proveedor, error) {
+	row := q.db.QueryRowContext(ctx, getProviderByName, nombre)
+	var i Proveedor
+	err := row.Scan(&i.Idproveedor, &i.Nombre, &i.Descrip)
+	return i, err
+}
+
 const updateProvider = `-- name: UpdateProvider :exec
 UPDATE Proveedor
 SET nombre = ?, descrip = ?
@@ -94,5 +105,22 @@ type UpdateProviderParams struct {
 
 func (q *Queries) UpdateProvider(ctx context.Context, arg UpdateProviderParams) error {
 	_, err := q.db.ExecContext(ctx, updateProvider, arg.Nombre, arg.Descrip, arg.Idproveedor)
+	return err
+}
+
+const updateProviderByName = `-- name: UpdateProviderByName :exec
+UPDATE Proveedor
+SET nombre = ?, descrip = ?
+WHERE nombre = ?
+`
+
+type UpdateProviderByNameParams struct {
+	Nombre   string `json:"nombre"`
+	Descrip  string `json:"descrip"`
+	Nombre_2 string `json:"nombre_2"`
+}
+
+func (q *Queries) UpdateProviderByName(ctx context.Context, arg UpdateProviderByNameParams) error {
+	_, err := q.db.ExecContext(ctx, updateProviderByName, arg.Nombre, arg.Descrip, arg.Nombre_2)
 	return err
 }
