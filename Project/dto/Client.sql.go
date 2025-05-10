@@ -164,12 +164,12 @@ UPDATE Cliente SET contraseña = ?
 WHERE idCliente = ?
 `
 
-type updateClientPasswordParams struct {
+type UpdateClientPasswordParams struct {
 	Contraseña string `json:"contraseña"`
 	Idcliente  int32  `json:"idcliente"`
 }
 
-func (q *Queries) updateClientPassword(ctx context.Context, arg updateClientPasswordParams) error {
+func (q *Queries) UpdateClientPassword(ctx context.Context, arg UpdateClientPasswordParams) error {
 	_, err := q.db.ExecContext(ctx, updateClientPassword, arg.Contraseña, arg.Idcliente)
 	return err
 }
