@@ -24,8 +24,8 @@ func NewPasetoBuilder(symmetricKey string) (Builder, error) {
 	return builder, nil
 }
 
-func (builder *PasetoBuilder) CreateToken(email string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(email, duration)
+func (builder *PasetoBuilder) CreateToken(user string, role string, duration time.Duration) (string, error) {
+	payload, err := NewPayload(user, role, duration)
 	if err != nil {
 		return "", err
 	}

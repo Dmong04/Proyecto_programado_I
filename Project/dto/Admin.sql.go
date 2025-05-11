@@ -95,6 +95,24 @@ func (q *Queries) GetAdminByName(ctx context.Context, nombre string) (GetAdminBy
 	return i, err
 }
 
+const getAdminByUser = `-- name: GetAdminByUser :one
+SELECT idadministrador, nombre, correo, usuario, contraseña FROM Administrador
+WHERE usuario = ? LIMIT 1
+`
+
+func (q *Queries) GetAdminByUser(ctx context.Context, usuario string) (Administrador, error) {
+	row := q.db.QueryRowContext(ctx, getAdminByUser, usuario)
+	var i Administrador
+	err := row.Scan(
+		&i.Idadministrador,
+		&i.Nombre,
+		&i.Correo,
+		&i.Usuario,
+		&i.Contraseña,
+	)
+	return i, err
+}
+
 const getAllAdmins = `-- name: GetAllAdmins :many
 SELECT idAdministrador, nombre, correo, usuario FROM Administrador
 `

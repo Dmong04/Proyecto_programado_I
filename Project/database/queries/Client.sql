@@ -27,3 +27,7 @@ DELETE FROM Cliente WHERE idCliente = ?;
 
 -- name: DeleteClientByName :execresult
 DELETE FROM Cliente WHERE nombre = ?;
+
+-- name: GetClientByUser :one
+SELECT * FROM Cliente
+WHERE usuario = ? LIMIT 1;
