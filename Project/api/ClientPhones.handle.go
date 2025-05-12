@@ -81,8 +81,7 @@ func (server *Server) UpdateClientPhones(ctx *gin.Context) {
 	params := dto.UpdateClientPhonesParams{
 		Numero:             bodyReq.Number,
 		Tipo:               bodyReq.NumberType,
-		Idcliente:          bodyReq.IdClient,
-		Idtelefonoclientes: request.ID,
+		Idtelefonoclientes: bodyReq.IdClient,
 	}
 	err := server.dbtx.UpdateClientPhones(ctx, params)
 	if err != nil {

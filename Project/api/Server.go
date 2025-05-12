@@ -47,7 +47,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.GET("/api/v1/Details/:id", server.getDetailsByID)
 	router.PATCH("/api/v1/Details/update/:id", server.UpdateDetail)
 	router.DELETE("/api/v1/Details/delete/:id", server.DeleteDetail)
-	//CRUD Historial (Funciona)
+	//CRUD Historial
 	router.GET("/api/v1/History/all", server.GetAllHistories)
 	router.POST("/api/v1/History", server.CreateHistory)
 	router.GET("/api/v1/History/:id", server.GetHistoryByID)

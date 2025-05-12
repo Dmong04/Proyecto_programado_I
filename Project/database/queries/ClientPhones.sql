@@ -13,7 +13,7 @@ VALUES (?, ?, ?);
 
 -- name: UpdateClientPhones :exec
 UPDATE telefonoClientes
-SET numero = ?, tipo = ?, idCliente = ?
+SET numero = ?, tipo = ?
 WHERE idtelefonoClientes = ?;
 
 -- name: DeleteClientPhones :exec
