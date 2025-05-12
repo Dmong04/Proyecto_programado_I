@@ -134,6 +134,24 @@ func (q *Queries) GetClientByName(ctx context.Context, nombre string) (GetClient
 	return i, err
 }
 
+const getClientByUser = `-- name: GetClientByUser :one
+SELECT idcliente, nombre, correo, usuario, contraseña FROM Cliente
+WHERE usuario = ? LIMIT 1
+`
+
+func (q *Queries) GetClientByUser(ctx context.Context, usuario string) (Cliente, error) {
+	row := q.db.QueryRowContext(ctx, getClientByUser, usuario)
+	var i Cliente
+	err := row.Scan(
+		&i.Idcliente,
+		&i.Nombre,
+		&i.Correo,
+		&i.Usuario,
+		&i.Contraseña,
+	)
+	return i, err
+}
+
 const updateClient = `-- name: UpdateClient :execresult
 UPDATE Cliente
 SET nombre = ?, correo = ?, usuario = ?

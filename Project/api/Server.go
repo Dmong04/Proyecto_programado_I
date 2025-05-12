@@ -56,23 +56,23 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.GET("/api/v1/Client/id/:id", server.GetClientByID)
 	router.GET("/api/v1/Client/all", server.GetAllClients)
 	router.GET("/api/v1/Client/name/:name", server.GetClientByName)
-	router.PATCH("/api/v1/Client/update/id/:id", server.UpdateClient)
+	router.PATCH("/api/v1/Client/update/:id", server.UpdateClient)
 	router.PATCH("/api/v1/Client/password/:id", server.UpdateClientPassword)
-	router.DELETE("/api/v1/Client/delete/id/:id", server.DeleteClient)
+	router.DELETE("/api/v1/Client/delete/:id", server.DeleteClient)
 	router.DELETE("/api/v1/Client/delete/name/:name", server.DeleteClientByName)
 
 	// CRUD ClientPhones
-	router.POST("/api/v1/ClientPhones", server.CreateClientPhones)
-	router.GET("/api/v1/ClientPhones/id/:id", server.GetClientPhonesById)
-	router.GET("/api/v1/ClientPhones/client/:idclient", server.GetClientPhonesByClientID)
-	router.GET("/api/v1/ClientPhones/all", server.GetAllClientPhones)
-	router.PATCH("/api/v1/ClientPhones/update/id/:id", server.UpdateClientPhones)
-	router.DELETE("/api/v1/ClientPhones/delete/id/:id", server.DeleteClientPhones)
+	router.POST("/api/v1/Client/Phones", server.CreateClientPhones)
+	router.GET("/api/v1/Client/Phones/id/:id", server.GetClientPhonesById)
+	router.GET("/api/v1/Client/Phones/client/:idclient", server.GetClientPhonesByClientID)
+	router.GET("/api/v1/Client/Phones/all", server.GetAllClientPhones)
+	router.PATCH("/api/v1/Client/Phones/update/:id", server.UpdateClientPhones)
+	router.DELETE("/api/v1/Client/Phones/delete/:id", server.DeleteClientPhones)
 
 	// CRUD Travel
 	router.POST("/api/v1/Travel", server.CreateTravel)
 	router.GET("/api/v1/Travel/all", server.GetAllTravels)
-	router.GET("/api/v1/Travel/id/:id", server.GetTravelById)
+	router.GET("/api/v1/Travel/:id", server.GetTravelById)
 	router.DELETE("/api/v1/Travel/delete/:id", server.DeleteTravel)
 	router.PATCH("/api/v1/Travel/update/:id", server.UpdateTravel)
 

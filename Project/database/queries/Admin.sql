@@ -26,3 +26,7 @@ DELETE FROM Administrador WHERE idAdministrador = ?;
 
 -- name: DeleteAdminByName :execresult
 DELETE FROM Administrador WHERE nombre = ?;
+
+-- name: GetAdminByUser :one
+SELECT * FROM Administrador
+WHERE usuario = ? LIMIT 1;
