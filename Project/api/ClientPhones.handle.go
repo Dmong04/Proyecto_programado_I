@@ -12,7 +12,7 @@ import (
 
 func (server *Server) GetAllClientPhones(ctx *gin.Context) {
 
-	ClientPhones, err := server.dbtx.GetAllAdmins(ctx)
+	ClientPhones, err := server.dbtx.GetAllClientPhones(ctx)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -67,7 +67,7 @@ type updateClientPhonesRequestBody struct {
 func (server *Server) UpdateClientPhones(ctx *gin.Context) {
 
 	var request updateClientPhonesRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -151,7 +151,7 @@ type getClientPhonesByClientIDRequest struct {
 	IdClient int32 `json:"idclient" binding:"required"`
 }
 
-func (server *Server) GetClientPhonesByClientIDByName(ctx *gin.Context) {
+func (server *Server) GetClientPhonesByClientID(ctx *gin.Context) {
 
 	var req getClientPhonesByClientIDRequest
 
