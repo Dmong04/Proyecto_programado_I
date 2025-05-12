@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 	"project/dto"
 
@@ -18,7 +19,7 @@ func (server *Server) GetAllPassengers(ctx *gin.Context) {
 }
 
 type getPassengersByDetailIDRequest struct {
-	DetailID int32 `uri:"idDetail" binding:"required"`
+	DetailID int32 `uri:"detail_id" binding:"required"`
 }
 
 func (server *Server) GetPassengersByDetailID(ctx *gin.Context) {
@@ -42,12 +43,13 @@ func (server *Server) GetPassengersByDetailID(ctx *gin.Context) {
 type createPassengersRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Age      int32  `json:"age" binding:"required"`
-	DetailID int32  `json:"idDetail" binding:"required"`
+	DetailID int32  `json:"detail_id" binding:"required"`
 }
 
 func (server *Server) CreatePassenger(ctx *gin.Context) {
 	var request createPassengersRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
+		fmt.Printf("Error binding JSON: %v\n", err)
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -115,7 +117,7 @@ type updatePassengerRequest struct {
 type updatePassengerBodyRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Age      int32  `json:"age" binding:"required"`
-	DetailID int32  `json:"idDetail" binding:"required"`
+	DetailID int32  `json:"detail_id" binding:"required"`
 }
 
 func (server *Server) UpdatePassengers(ctx *gin.Context) {

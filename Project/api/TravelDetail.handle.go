@@ -4,8 +4,7 @@ import (
 	"database/sql"
 	"net/http"
 	"project/dto"
-	"strings"
-	"time"
+	"regexp"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,40 +40,15 @@ func (server *Server) getDetailsByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, detail)
 }
 
-type onlyDate struct {
-	time.Time
-}
-
-func (date *onlyDate) UnmarshalJSON(b []byte) error {
-	s := strings.Trim(string(b), `"`)
-	t, err := time.Parse("2006-01-02", s)
-	if err != nil {
-		return err
-	}
-	date.Time = t
-	return nil
-}
-
-type onlyTime struct {
-	time.Time
-}
-
-func (hour *onlyTime) UnmarshalJSON(b []byte) error {
-	s := strings.Trim(string(b), `"`)
-	t, err := time.Parse("15:00", s)
-	if err != nil {
-		return err
-	}
-	hour.Time = t
-	return nil
-}
-
 type createDetailsRequest struct {
-	Fecha       onlyDate      `json:"date" binding:"required"`
-	Hora        onlyTime      `json:"time" binding:"required"`
-	Idproveedor sql.NullInt32 `json:"providerId" binding:"omitempty"`
-	Idviaje     int32         `json:"travelId" binding:"required"`
+	Fecha       string        `json:"date" binding:"required"`
+	Hora        string        `json:"time" binding:"required"`
+	Idproveedor sql.NullInt32 `json:"provider_id" binding:"omitempty"`
+	Idviaje     int32         `json:"travel_id" binding:"required"`
 }
+
+var dateRegex = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}$`) // YYYY-MM-DD
+var timeRegex = regexp.MustCompile(`^\d{2}:\d{2}$`)
 
 func (server *Server) CreateDetail(ctx *gin.Context) {
 	var request createDetailsRequest
@@ -82,9 +56,16 @@ func (server *Server) CreateDetail(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+	if !dateRegex.MatchString(request.Fecha) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Formato de fecha incorrecto"})
+		return
+	}
+	if !timeRegex.MatchString(request.Hora) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Formato de hora incorrecto"})
+	}
 	args := dto.CreateTravelDetailParams{
-		Fecha:       request.Fecha.Time,
-		Hora:        request.Hora.Time,
+		Fecha:       request.Fecha,
+		Hora:        request.Hora,
 		Idproveedor: request.Idproveedor,
 		Idviaje:     request.Idviaje,
 	}
@@ -100,10 +81,10 @@ type updateDetailrequest struct {
 	ID int32 `uri:"id" binding:"required"`
 }
 type updateDetailBodyrequest struct {
-	Fecha       onlyDate      `json:"date" binding:"required"`
-	Hora        onlyTime      `json:"time" binding:"required"`
-	Idproveedor sql.NullInt32 `json:"providerId" binding:"omitempty"`
-	Idviaje     int32         `json:"travelId" binding:"required"`
+	Fecha       string        `json:"date" binding:"required"`
+	Hora        string        `json:"time" binding:"required"`
+	Idproveedor sql.NullInt32 `json:"provider_id" binding:"omitempty"`
+	Idviaje     int32         `json:"travel_id" binding:"required"`
 }
 
 func (server *Server) UpdateDetail(ctx *gin.Context) {
@@ -118,11 +99,18 @@ func (server *Server) UpdateDetail(ctx *gin.Context) {
 		return
 	}
 	params := dto.UpdateTravelDetailParams{
-		Fecha:          bodyReq.Fecha.Time,
-		Hora:           bodyReq.Hora.Time,
+		Fecha:          bodyReq.Fecha,
+		Hora:           bodyReq.Hora,
 		Idproveedor:    bodyReq.Idproveedor,
 		Idviaje:        bodyReq.Idviaje,
 		Iddetalleviaje: request.ID,
+	}
+	if !dateRegex.MatchString(bodyReq.Fecha) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Formato de fecha incorrecto"})
+		return
+	}
+	if !timeRegex.MatchString(bodyReq.Hora) {
+		ctx.JSON(http.StatusBadRequest, gin.H{"message": "Formato de hora incorrecto"})
 	}
 	err := server.dbtx.UpdateTravelDetail(ctx, params)
 	if err != nil {

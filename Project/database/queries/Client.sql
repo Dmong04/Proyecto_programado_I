@@ -13,17 +13,21 @@ FROM Cliente WHERE nombre = ? LIMIT 1;
 INSERT INTO Cliente (nombre, correo, usuario, contraseña)
 VALUES (?, ?, ?, ?);
 
--- name: UpdateClient :exec
+-- name: UpdateClient :execresult
 UPDATE Cliente
 SET nombre = ?, correo = ?, usuario = ?
 WHERE idCliente = ?;
 
--- name: updateClientPassword :exec
+-- name: UpdateClientPassword :execresult
 UPDATE Cliente SET contraseña = ? 
 WHERE idCliente = ?;
 
--- name: DeleteClient :exec
+-- name: DeleteClient :execresult
 DELETE FROM Cliente WHERE idCliente = ?;
 
--- name: DeleteClientByName :exec
+-- name: DeleteClientByName :execresult
 DELETE FROM Cliente WHERE nombre = ?;
+
+-- name: GetClientByUser :one
+SELECT * FROM Cliente
+WHERE usuario = ? LIMIT 1;

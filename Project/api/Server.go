@@ -37,7 +37,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.GET("/api/v1/Passengers/all", server.GetAllPassengers)
 	router.POST("/api/v1/Passengers", server.CreatePassenger)
 	router.GET("/api/v1/Passengers/:id", server.GetPassengersById)
-	router.GET("/api/v1/Passengers/detail/:detailId", server.GetPassengersByDetailID)
+	router.GET("/api/v1/Passengers/detail/:detail_id", server.GetPassengersByDetailID)
 	router.GET("/api/v1/Passengers/name/:name", server.GetPassengersByName)
 	router.PATCH("/api/v1/Passengers/update/:id", server.UpdatePassengers)
 	router.DELETE("/api/v1/Passengers/delete/:id", server.DeletePassenger)
@@ -62,6 +62,28 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.PATCH("/api/v1/Provider/update/name/:name", server.UpdateProviderByName)
 	router.DELETE("/api/v1/Provider/delete/:id", server.DeleteProvider)
 	router.DELETE("/api/v1/Provider/delete/name/:name", server.DeleteProviderByName)
+	// CRUD Client
+	router.POST("/api/v1/Client", server.CreateClient)
+	router.GET("/api/v1/Client/id/:id", server.GetClientByID)
+	router.GET("/api/v1/Client/all", server.GetAllClients)
+	router.GET("/api/v1/Client/name/:name", server.GetClientByName)
+	router.PATCH("/api/v1/Client/update/:id", server.UpdateClient)
+	router.PATCH("/api/v1/Client/password/:id", server.UpdateClientPassword)
+	router.DELETE("/api/v1/Client/delete/:id", server.DeleteClient)
+	router.DELETE("/api/v1/Client/delete/name/:name", server.DeleteClientByName)
+	// CRUD ClientPhones
+	router.POST("/api/v1/Client/Phones", server.CreateClientPhones)
+	router.GET("/api/v1/Client/Phones/id/:id", server.GetClientPhonesById)
+	router.GET("/api/v1/Client/Phones/client/:idclient", server.GetClientPhonesByClientID)
+	router.GET("/api/v1/Client/Phones/all", server.GetAllClientPhones)
+	router.PATCH("/api/v1/Client/Phones/update/:id", server.UpdateClientPhones)
+	router.DELETE("/api/v1/Client/Phones/delete/:id", server.DeleteClientPhones)
+	// CRUD Travel
+	router.POST("/api/v1/Travel", server.CreateTravel)
+	router.GET("/api/v1/Travel/all", server.GetAllTravels)
+	router.GET("/api/v1/Travel/:id", server.GetTravelById)
+	router.DELETE("/api/v1/Travel/delete/:id", server.DeleteTravel)
+	router.PATCH("/api/v1/Travel/update/:id", server.UpdateTravel)
 	// Rutas (Endpoints) De la API
 	server.router = router
 	return server, nil

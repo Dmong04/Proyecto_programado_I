@@ -8,53 +8,53 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (server *Server) GetAllAdmins(ctx *gin.Context) {
-	admins, err := server.dbtx.GetAllAdmins(ctx)
+func (server *Server) GetAllClients(ctx *gin.Context) {
+	clients, err := server.dbtx.GetAllClients(ctx)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, admins)
+	ctx.JSON(http.StatusOK, clients)
 }
 
-type createAdminRequest struct {
-	Name     string `json:"name" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	User     string `json:"user" binding:"required"`
-	Password string `json:"password" binding:"required"`
+type CreateClientRequest struct {
+	Nombre     string `json:"name"`
+	Correo     string `json:"email"`
+	Usuario    string `json:"user"`
+	Contraseña string `json:"password"`
 }
 
-func (server *Server) CreateAdmin(ctx *gin.Context) {
-	var req createAdminRequest
+func (server *Server) CreateClient(ctx *gin.Context) {
+	var req CreateClientRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	args := dto.CreateAdminParams{
-		Nombre:     req.Name,
-		Correo:     req.Email,
-		Usuario:    req.User,
-		Contraseña: req.Password,
+	args := dto.CreateClientParams{
+		Nombre:     req.Nombre,
+		Correo:     req.Correo,
+		Usuario:    req.Usuario,
+		Contraseña: req.Contraseña,
 	}
-	admin, err := server.dbtx.CreateAdmin(ctx, args)
+	client, err := server.dbtx.CreateClient(ctx, args)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, admin)
+	ctx.JSON(http.StatusOK, client)
 }
 
-type getAdminByIDRequest struct {
+type getClientByIDRequest struct {
 	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
-func (server *Server) GetAdminByID(ctx *gin.Context) {
-	var req getAdminByIDRequest
+func (server *Server) GetClientByID(ctx *gin.Context) {
+	var req getClientByIDRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	admin, err := server.dbtx.GetAdminById(ctx, req.ID)
+	client, err := server.dbtx.GetClientById(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -63,20 +63,20 @@ func (server *Server) GetAdminByID(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, admin)
+	ctx.JSON(http.StatusOK, client)
 }
 
-type getAdminByNameRequest struct {
+type getClientByNameRequest struct {
 	Nombre string `uri:"name" binding:"required,min=1"`
 }
 
-func (server *Server) GetAdminByName(ctx *gin.Context) {
-	var req getAdminByNameRequest
+func (server *Server) GetClientByName(ctx *gin.Context) {
+	var req getClientByNameRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	admin, err := server.dbtx.GetAdminByName(ctx, req.Nombre)
+	client, err := server.dbtx.GetClientByName(ctx, req.Nombre)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -85,37 +85,36 @@ func (server *Server) GetAdminByName(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, admin)
+	ctx.JSON(http.StatusOK, client)
 }
 
-type updateAdminRequest struct {
+type updateClientRequest struct {
 	ID int32 `uri:"id" binding:"required"`
 }
-
-type updateAdminBodyRequest struct {
+type updateClientBody struct {
 	Name  string `json:"name" binding:"required,min=1"`
 	Email string `json:"email" binding:"required,email"`
 	User  string `json:"user" binding:"required,alphanum"`
 }
 
-func (server *Server) UpdateAdmin(ctx *gin.Context) {
-	var req updateAdminRequest
+func (server *Server) UpdateClient(ctx *gin.Context) {
+	var req updateClientRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	var bodyReq updateAdminBodyRequest
+	var bodyReq updateClientBody
 	if err := ctx.ShouldBindJSON(&bodyReq); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	params := dto.UpdateAdminParams{
-		Nombre:          bodyReq.Name,
-		Correo:          bodyReq.Email,
-		Usuario:         bodyReq.User,
-		Idadministrador: req.ID,
+	params := dto.UpdateClientParams{
+		Nombre:    bodyReq.Name,
+		Correo:    bodyReq.Email,
+		Usuario:   bodyReq.User,
+		Idcliente: req.ID,
 	}
-	success, err := server.dbtx.UpdateAdmin(ctx, params)
+	success, err := server.dbtx.UpdateClient(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
@@ -123,48 +122,45 @@ func (server *Server) UpdateAdmin(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, success)
 }
 
-type updateAdminPasswordParam struct {
+type updateClientPasswordParam struct {
+	ID       int32  `json:"id" binding:"required,min=1"`
 	Password string `json:"password" binding:"required"`
 }
 
-type updateAdminPasswordURI struct {
-	ID int32 `uri:"id" binding:"required,min=1"`
-}
-
-func (server *Server) UpdateAdminPassword(ctx *gin.Context) {
-	var uri updateAdminPasswordURI
-	if err := ctx.ShouldBindUri(&uri); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	var pswrdReq updateAdminPasswordParam
-	if err := ctx.ShouldBindJSON(&pswrdReq); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	param := dto.UpdateAdminPasswordParams{
-		Contraseña:      pswrdReq.Password,
-		Idadministrador: uri.ID,
-	}
-	success, err := server.dbtx.UpdateAdminPassword(ctx, param)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, success)
-}
-
-type deleteAdminRequest struct {
-	ID int32 `uri:"id" binding:"required"`
-}
-
-func (server *Server) DeleteAdmin(ctx *gin.Context) {
-	var req deleteAdminRequest
+func (server *Server) UpdateClientPassword(ctx *gin.Context) {
+	var req updateClientRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	success, err := server.dbtx.DeleteAdmin(ctx, req.ID)
+	var pswrdReq updateClientPasswordParam
+	if err := ctx.ShouldBindJSON(&pswrdReq); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	param := dto.UpdateClientPasswordParams{
+		Idcliente:  pswrdReq.ID,
+		Contraseña: pswrdReq.Password,
+	}
+	success, err := server.dbtx.UpdateClientPassword(ctx, param)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, success)
+}
+
+type deleteClientRequest struct {
+	ID int32 `json:"id" binding:"required"`
+}
+
+func (server *Server) DeleteClient(ctx *gin.Context) {
+	var req deleteClientRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	success, err := server.dbtx.DeleteClient(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -176,17 +172,17 @@ func (server *Server) DeleteAdmin(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, success)
 }
 
-type deleteAdminByNameRequest struct {
+type deleteClientByNameRequest struct {
 	Name string `uri:"name" binding:"required"`
 }
 
-func (server *Server) DeleteAdminByName(ctx *gin.Context) {
-	var req deleteAdminByNameRequest
+func (server *Server) DeleteClientByName(ctx *gin.Context) {
+	var req deleteClientByNameRequest
 	if err := ctx.ShouldBindUri(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	success, err := server.dbtx.DeleteAdminByName(ctx, req.Name)
+	success, err := server.dbtx.DeleteClientByName(ctx, req.Name)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return

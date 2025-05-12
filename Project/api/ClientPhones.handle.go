@@ -12,7 +12,7 @@ import (
 
 func (server *Server) GetAllClientPhones(ctx *gin.Context) {
 
-	ClientPhones, err := server.dbtx.GetAllAdmins(ctx)
+	ClientPhones, err := server.dbtx.GetAllClientPhones(ctx)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -55,7 +55,7 @@ func (server *Server) CreateClientPhones(ctx *gin.Context) {
 // =====================================================
 
 type updateClientPhonesRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 type updateClientPhonesRequestBody struct {
@@ -67,7 +67,7 @@ type updateClientPhonesRequestBody struct {
 func (server *Server) UpdateClientPhones(ctx *gin.Context) {
 
 	var request updateClientPhonesRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -94,13 +94,13 @@ func (server *Server) UpdateClientPhones(ctx *gin.Context) {
 // =====================================================
 
 type deleteClientPhonesRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 func (server *Server) DeleteClientPhones(ctx *gin.Context) {
 
 	var request deleteClientPhonesRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -121,7 +121,7 @@ func (server *Server) DeleteClientPhones(ctx *gin.Context) {
 // ===========================Gets=======================
 
 type getClientPhonesByIdRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
+	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) GetClientPhonesById(ctx *gin.Context) {
@@ -148,10 +148,10 @@ func (server *Server) GetClientPhonesById(ctx *gin.Context) {
 // =====================================================
 
 type getClientPhonesByClientIDRequest struct {
-	IdClient int32 `json:"idclient" binding:"required"`
+	IdClient int32 `uri:"idclient" binding:"required"`
 }
 
-func (server *Server) GetClientPhonesByClientIDByName(ctx *gin.Context) {
+func (server *Server) GetClientPhonesByClientID(ctx *gin.Context) {
 
 	var req getClientPhonesByClientIDRequest
 
