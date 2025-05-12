@@ -71,7 +71,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.PATCH("/api/v1/Client/password/:id", server.UpdateClientPassword)
 	router.DELETE("/api/v1/Client/delete/:id", server.DeleteClient)
 	router.DELETE("/api/v1/Client/delete/name/:name", server.DeleteClientByName)
-	// CRUD ClientPhones
+	// CRUD ClientPhones (Funciona)
 	router.POST("/api/v1/Client/Phones", server.CreateClientPhones)
 	router.GET("/api/v1/Client/Phones/id/:id", server.GetClientPhonesById)
 	router.GET("/api/v1/Client/Phones/client/:idclient", server.GetClientPhonesByClientID)
