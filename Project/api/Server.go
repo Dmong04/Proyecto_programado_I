@@ -78,6 +78,12 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.GET("/api/v1/Client/Phones/all", server.GetAllClientPhones)
 	router.PATCH("/api/v1/Client/Phones/update/:id", server.UpdateClientPhones)
 	router.DELETE("/api/v1/Client/Phones/delete/:id", server.DeleteClientPhones)
+	// CRUD Reservaciones
+	router.POST("/api/v1/Reservations", server.CreateReservation)
+	router.GET("/api/v1/Reservations/all", server.GetAllReservations)
+	router.GET("/api/v1/Reservations/:id", server.GetReservationsById)
+	router.PATCH("/api/v1/Reservations/update/:id", server.UpdateReservations)
+	router.DELETE("/api/v1/Reservations/delete/:id", server.DeleteReservation)
 	// CRUD Travel (Funciona)
 	router.POST("/api/v1/Travel", server.CreateTravel)
 	router.GET("/api/v1/Travel/all", server.GetAllTravels)
