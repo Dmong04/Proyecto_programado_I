@@ -116,17 +116,23 @@ func (q *Queries) GetClientPhonesById(ctx context.Context, idtelefonoclientes in
 
 const updateClientPhones = `-- name: UpdateClientPhones :exec
 UPDATE telefonoClientes
-SET numero = ?, tipo = ?
+SET numero = ?, tipo = ?, idCliente = ?
 WHERE idtelefonoClientes = ?
 `
 
 type UpdateClientPhonesParams struct {
 	Numero             string `json:"numero"`
 	Tipo               string `json:"tipo"`
+	Idcliente          int32  `json:"idcliente"`
 	Idtelefonoclientes int32  `json:"idtelefonoclientes"`
 }
 
 func (q *Queries) UpdateClientPhones(ctx context.Context, arg UpdateClientPhonesParams) error {
-	_, err := q.db.ExecContext(ctx, updateClientPhones, arg.Numero, arg.Tipo, arg.Idtelefonoclientes)
+	_, err := q.db.ExecContext(ctx, updateClientPhones,
+		arg.Numero,
+		arg.Tipo,
+		arg.Idcliente,
+		arg.Idtelefonoclientes,
+	)
 	return err
 }
