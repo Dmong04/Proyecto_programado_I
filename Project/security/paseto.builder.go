@@ -31,6 +31,7 @@ func (builder *PasetoBuilder) CreateToken(user string, role string, duration tim
 	}
 	return builder.paseto.Encrypt(builder.symmetricKey, payload, nil)
 }
+
 func (builder *PasetoBuilder) VerifyToken(token string) (*Payload, error) {
 	payload := &Payload{}
 	err := builder.paseto.Decrypt(token, builder.symmetricKey, payload, nil)

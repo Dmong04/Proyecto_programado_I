@@ -27,7 +27,8 @@ func NewPayload(user string, role string, duration time.Duration) (*Payload, err
 	}
 	payload := &Payload{
 		ID:        tokenID,
-		User:      role,
+		User:      user,
+		Role:      role,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}
