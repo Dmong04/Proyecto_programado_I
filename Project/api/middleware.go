@@ -39,15 +39,22 @@ func authMiddleware(tokenBuilder security.Builder) gin.HandlerFunc {
 	}
 }
 
-func roleMiddleware(requiredRole string) gin.HandlerFunc {
+func roleMiddleware(requiredRoles ...string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		payloadInterface, exists := ctx.Get("authorized")
 		if !exists {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token inválido"})
 			return
 		}
+		roleAllowed := false
 		payload := payloadInterface.(*security.Payload)
-		if payload.Role != requiredRole {
+		for _, role := range requiredRoles {
+			if payload.Role == role {
+				roleAllowed = true
+				break
+			}
+		}
+		if !roleAllowed {
 			ctx.AbortWithStatusJSON(http.StatusForbidden, gin.H{"error": "No se cuenta con permisos para este recurso"})
 			return
 		}
