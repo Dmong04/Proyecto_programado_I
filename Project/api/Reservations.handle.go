@@ -55,7 +55,7 @@ func (server *Server) CreateReservation(ctx *gin.Context) {
 // =====================================================
 
 type updateReservationRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 type updateReservationBodyRequest struct {
@@ -67,7 +67,7 @@ type updateReservationBodyRequest struct {
 func (server *Server) UpdateReservations(ctx *gin.Context) {
 
 	var request updateReservationRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -82,6 +82,7 @@ func (server *Server) UpdateReservations(ctx *gin.Context) {
 		Idcliente:       bodyReq.ClientID,
 		Idadministrador: bodyReq.AdministratorID,
 		Iddetalle:       bodyReq.DetailID,
+		Idreservas:      request.ID,
 	}
 	err := server.dbtx.UpdateReservation(ctx, params)
 	if err != nil {
@@ -93,13 +94,13 @@ func (server *Server) UpdateReservations(ctx *gin.Context) {
 
 // =====================================================
 type deleteReservationRequest struct {
-	ID int32 `json:"id" binding:"required"`
+	ID int32 `uri:"id" binding:"required"`
 }
 
 func (server *Server) DeleteReservation(ctx *gin.Context) {
 
 	var request deleteReservationRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
+	if err := ctx.ShouldBindUri(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
@@ -120,7 +121,7 @@ func (server *Server) DeleteReservation(ctx *gin.Context) {
 // ===========================Gets=======================
 
 type getReservationByIdRequest struct {
-	ID int32 `json:"id" binding:"required,min=1"`
+	ID int32 `uri:"id" binding:"required,min=1"`
 }
 
 func (server *Server) GetReservationsById(ctx *gin.Context) {
