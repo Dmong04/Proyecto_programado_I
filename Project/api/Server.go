@@ -53,8 +53,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
-		// Consulta de historial por consulta del admin o del cliente
-		sharedRoutes.GET("api/v1/History/:id", server.GetHistoryByID)
 	}
 	adminRoutes.Use(auth, roleMiddleware("Admin"))
 	{
@@ -67,11 +65,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		adminRoutes.PATCH("api/v1/Admin/update/password/:id", server.UpdateAdminPassword)
 		adminRoutes.DELETE("api/v1/Admin/delete/:id", server.DeleteAdmin)
 		adminRoutes.DELETE("api/v1/Admin/delete/name/:name", server.DeleteAdminByName)
-		//CRUD Historial (Funciona)
-		adminRoutes.GET("api/v1/History/all", server.GetAllHistories)
-		adminRoutes.POST("api/v1/History", server.CreateHistory)
-		adminRoutes.PATCH("api/v1/History/update/:id", server.UpdateHistory)
-		adminRoutes.DELETE("api/v1/History/delete/:id", server.DeleteHistory)
 		//CRUD Proveedor (Funciona)
 		adminRoutes.GET("api/v1/Provider/all", server.GetAllProviders)
 		adminRoutes.POST("api/v1/Provider", server.CreateProvider)
