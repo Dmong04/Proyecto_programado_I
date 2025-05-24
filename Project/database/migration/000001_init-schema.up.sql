@@ -48,26 +48,6 @@ CREATE TABLE IF NOT EXISTS `Extras` (
   PRIMARY KEY (`idExtra`)
 ) ENGINE=InnoDB;
 
--- Tabla: Viaje_Extras
-CREATE TABLE IF NOT EXISTS `Viaje_Extras` (
-  `idViaje_Extra` INT NOT NULL AUTO_INCREMENT,
-  `idViaje` INT NOT NULL,
-  `idExtra` INT DEFAULT NULL,
-  PRIMARY KEY (`idViaje_Extra`),
-  INDEX `idx_Extra` (`idExtra`),
-  INDEX `idx_viaje_Extra` (`idViaje`),
-  CONSTRAINT `FK_Extra_Viaje`
-    FOREIGN KEY (`idViaje`)
-    REFERENCES `Viaje` (`idViaje`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `FK_Viaje_Extra`
-    FOREIGN KEY (`idExtra`)
-    REFERENCES `Extras` (`idExtra`)
-    ON DELETE SET NULL
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
 -- Tabla: detalleViaje
 CREATE TABLE IF NOT EXISTS `detalleViaje` (
   `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
@@ -127,12 +107,15 @@ CREATE TABLE IF NOT EXISTS `telefonoClientes` (
 
 -- Tabla: reservas
 CREATE TABLE IF NOT EXISTS `reservas` (
-  `idreservas` INT NOT NULL AUTO_INCREMENT,
+  `idReservas` INT NOT NULL AUTO_INCREMENT,
   `idCliente` INT NOT NULL,
   `idAdministrador` INT NOT NULL,
   `idDetalle` INT NOT NULL,
   `fecha` VARCHAR(10) NOT NULL,
   `hora` VARCHAR(10) NOT NULL,
+  `subtotalViaje` DECIMAL NOT NULL,
+  `subtotalExtra` DECIMAL NOT NULL,
+  `total` DECIMAL NOT NULL,
   PRIMARY KEY (`idreservas`),
   INDEX `idx_reserva_cliente` (`idCliente`),
   INDEX `idx_reserva_admin` (`idAdministrador`),
@@ -151,6 +134,27 @@ CREATE TABLE IF NOT EXISTS `reservas` (
     FOREIGN KEY (`idDetalle`)
     REFERENCES `detalleViaje` (`idDetalleViaje`)
     ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
+
+-- Tabla: DetalleExtras
+CREATE TABLE IF NOT EXISTS `DetalleExtras` (
+  `idDetalleExtras` INT NOT NULL AUTO_INCREMENT,
+  `idReserva` INT NOT NULL,
+  `idExtra` INT DEFAULT NULL,
+  `cantidadPersonas` INT NOT NULL,
+  PRIMARY KEY (`idDetalleExtras`),
+  INDEX `idx_Extra` (`idExtra`),
+  INDEX `idx_Reserva_Extra` (`idReserva`),
+  CONSTRAINT `FK_Extra_Reserva`
+    FOREIGN KEY (`idReserva`)
+    REFERENCES `Reservas` (`idReservas`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_reserva_Extra`
+    FOREIGN KEY (`idExtra`)
+    REFERENCES `Extras` (`idExtra`)
+    ON DELETE SET NULL
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
