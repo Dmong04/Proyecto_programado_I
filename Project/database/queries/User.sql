@@ -17,7 +17,7 @@ Cliente as c on u.cliente = c.idCliente)) AS all_users WHERE idUsuario = ? LIMIT
 
 -- name: GetAdminByusername :one
 SELECT * FROM 
-(SELECT u.idUsuario, a.nombre, u.usuario, a.correo as correo, 'Admin' AS tipo FROM Usuario as u inner join 
+(SELECT u.idUsuario, u.nombre, u.usuario, u.correo as correo, 'Admin' AS tipo FROM Usuario as u inner join 
 Administrador as a on u.admin = a.idAdministrador
 UNION
 (SELECT u.idUsuario, c.nombre, u.usuario, c.correo as correo, 'Cliente' AS tipo FROM Usuario as u inner join 
