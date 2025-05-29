@@ -15,7 +15,8 @@ VALUES (?, ?, ?, ?);
 
 -- name: UpdateAdmin :execresult
 UPDATE Administrador
-SET nombre = ?, correo = ?, usuario = ? WHERE idAdministrador = ?;
+SET nombre = ?
+WHERE idAdministrador = ?;
 
 -- name: UpdateAdminPassword :execresult
 UPDATE Administrador SET contraseña = ? 

@@ -11,19 +11,21 @@ USE `coco_tours_db`;
 CREATE TABLE IF NOT EXISTS `Administrador` (
   `idAdministrador` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
+  PRIMARY KEY (`idAdministrador`)
+) ENGINE=InnoDB;
+
+--Tabla: Usuario
+CREATE TABLE ID NOT EXISTS `Usuario` (
+  `idUsuario`INT NOT NULL AUTO_INCREMENT,
   `correo` VARCHAR(60) NOT NULL,
   `usuario` VARCHAR(40) NOT NULL,
   `contraseña` VARCHAR(100) NOT NULL,
-  PRIMARY KEY (`idAdministrador`)
-) ENGINE=InnoDB;
+)
 
 -- Tabla: Cliente
 CREATE TABLE IF NOT EXISTS `Cliente` (
   `idCliente` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
-  `correo` VARCHAR(100) NOT NULL,
-  `usuario` VARCHAR(40) NOT NULL,
-  `contraseña` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`idCliente`)
 ) ENGINE=InnoDB;
 
@@ -79,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `Proveedor` (
   PRIMARY KEY (`idProveedor`)
 ) ENGINE=InnoDB;
 
--- Tabla: reservas
+-- Tabla: Reservas
 CREATE TABLE IF NOT EXISTS `reservas` (
   `idreservas` INT NOT NULL AUTO_INCREMENT,
   `idCliente` INT NOT NULL,
@@ -102,27 +104,6 @@ CREATE TABLE IF NOT EXISTS `reservas` (
   CONSTRAINT `FK_reserva_detalle`
     FOREIGN KEY (`idDetalle`)
     REFERENCES `detalleViaje` (`idDetalleViaje`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
--- Tabla: Historial
-CREATE TABLE IF NOT EXISTS `Historial` (
-  `idHistorial` INT NOT NULL AUTO_INCREMENT,
-  `descrip` VARCHAR(70) NOT NULL,
-  `idCliente` INT NOT NULL,
-  `idReserva` INT NOT NULL,
-  PRIMARY KEY (`idHistorial`),
-  INDEX `idx_historial_cliente` (`idCliente`),
-  INDEX `idx_historial_reserva` (`idReserva`),
-  CONSTRAINT `FK_historial_cliente`
-    FOREIGN KEY (`idCliente`)
-    REFERENCES `Cliente` (`idCliente`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `FK_historial_reserva`
-    FOREIGN KEY (`idReserva`)
-    REFERENCES `reservas` (`idreservas`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;

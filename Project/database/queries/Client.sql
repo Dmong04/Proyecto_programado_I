@@ -15,7 +15,7 @@ VALUES (?, ?, ?, ?);
 
 -- name: UpdateClient :execresult
 UPDATE Cliente
-SET nombre = ?, correo = ?, usuario = ?
+SET nombre = ?
 WHERE idCliente = ?;
 
 -- name: UpdateClientPassword :execresult
