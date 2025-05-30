@@ -24,8 +24,8 @@ func NewPasetoBuilder(symmetricKey string) (Builder, error) {
 	return builder, nil
 }
 
-func (builder *PasetoBuilder) CreateToken(email string, duration time.Duration) (string, error) {
-	payload, err := NewPayload(email, duration)
+func (builder *PasetoBuilder) CreateToken(user string, duration time.Duration) (string, error) {
+	payload, err := NewPayload(user, duration)
 	if err != nil {
 		return "", err
 	}
@@ -35,7 +35,7 @@ func (builder *PasetoBuilder) VerifyToken(token string) (*Payload, error) {
 	payload := &Payload{}
 	err := builder.paseto.Decrypt(token, builder.symmetricKey, payload, nil)
 	if err != nil {
-		return nil, ErrorInvalidToken
+		return nil, ErrInvalidToken
 	}
 	err = payload.Valid()
 	if err != nil {

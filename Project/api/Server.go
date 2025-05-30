@@ -3,8 +3,10 @@ package api
 import (
 	"project/dto"
 	"project/security"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
 )
 
 type Server struct {
@@ -23,6 +25,15 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		tokenBuilder: tokenBuilder,
 	}
 	router := gin.Default()
+	router.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     false,
+		ValidateHeaders: false,
+	}))
 	// Rutas (Endpoints) De la API
 	// CRUD Aministrador
 	router.GET("/api/v1/Admin/all", server.GetAllAdmins)
@@ -30,7 +41,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.GET("/api/v1/Admin/:id", server.GetAdminByID)
 	router.GET("/api/v1/Admin/name/:name", server.GetAdminByName)
 	router.PATCH("/api/v1/Admin/update/:id", server.UpdateAdmin)
-	router.PATCH("/api/v1/Admin/update/password/:id", server.UpdateAdminPassword)
 	router.DELETE("/api/v1/Admin/delete/:id", server.DeleteAdmin)
 	router.DELETE("/api/v1/Admin/delete/name/:name", server.DeleteAdminByName)
 	// CRUD Pasajeros
@@ -48,23 +58,29 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router.PATCH("api/v1/Details:id", server.UpdateDetail)
 	router.DELETE("api/v1/Details:id", server.DeleteDetail)
 	// CRUD Client
-	// CRUD Client
 	router.POST("/api/v1/Client", server.CreateClient)
 	router.GET("/api/v1/Client/id/:id", server.GetClientByID)
 	router.GET("/api/v1/Client/all", server.GetAllClients)
 	router.GET("/api/v1/Client/name/:name", server.GetClientByName)
 	router.PATCH("/api/v1/Client/update/id/:id", server.UpdateClient)
-	router.PATCH("/api/v1/Client/password/:id", server.UpdateClientPassword)
 	router.DELETE("/api/v1/Client/delete/id/:id", server.DeleteClient)
 	router.DELETE("/api/v1/Client/delete/name/:name", server.DeleteClientByName)
 
 	// CRUD Travel
-	router.POST("/api/v1/Travel", server.CreateTravel)
 	router.GET("/api/v1/Travel/all", server.GetAllTravels)
 	router.GET("/api/v1/Travel/id/:id", server.GetTravelById)
 	router.DELETE("/api/v1/Travel/delete/:id", server.DeleteTravel)
 	router.PATCH("/api/v1/Travel/update/:id", server.UpdateTravel)
-	// Rutas (Endpoints) De la API
+
+	//RUTAS CON MIDDLEWARE
+	authRoutes := router.Group("/").Use(authMiddleware(server.tokenBuilder))
+	authRoutes.POST("api/v1/Travel", server.CreateTravel)
+	authRoutes.PUT("api/v1/User/:id", server.updateUser)
+	authRoutes.PUT("api/v1/User", server.updateUser)
+	authRoutes.PUT("api/v1/Userpass", server.updatePassword)
+	authRoutes.PUT("api/v1/Userrole", server.updateRole)
+
+	// FIN RUTAS
 	server.router = router
 	return server, nil
 }

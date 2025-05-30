@@ -11,70 +11,44 @@ import (
 )
 
 const createClient = `-- name: CreateClient :execresult
-INSERT INTO Cliente (nombre, correo, usuario, contraseña)
-VALUES (?, ?, ?, ?)
+INSERT INTO Cliente (nombre)
+VALUES (?)
 `
 
-type CreateClientParams struct {
-	Nombre     string `json:"nombre"`
-	Correo     string `json:"correo"`
-	Usuario    string `json:"usuario"`
-	Contraseña string `json:"contraseña"`
+func (q *Queries) CreateClient(ctx context.Context, nombre string) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createClient, nombre)
 }
 
-func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createClient,
-		arg.Nombre,
-		arg.Correo,
-		arg.Usuario,
-		arg.Contraseña,
-	)
-}
-
-const deleteClient = `-- name: DeleteClient :exec
+const deleteClient = `-- name: DeleteClient :execresult
 DELETE FROM Cliente WHERE idCliente = ?
 `
 
-func (q *Queries) DeleteClient(ctx context.Context, idcliente int32) error {
-	_, err := q.db.ExecContext(ctx, deleteClient, idcliente)
-	return err
+func (q *Queries) DeleteClient(ctx context.Context, idcliente int32) (sql.Result, error) {
+	return q.db.ExecContext(ctx, deleteClient, idcliente)
 }
 
-const deleteClientByName = `-- name: DeleteClientByName :exec
+const deleteClientByName = `-- name: DeleteClientByName :execresult
 DELETE FROM Cliente WHERE nombre = ?
 `
 
-func (q *Queries) DeleteClientByName(ctx context.Context, nombre string) error {
-	_, err := q.db.ExecContext(ctx, deleteClientByName, nombre)
-	return err
+func (q *Queries) DeleteClientByName(ctx context.Context, nombre string) (sql.Result, error) {
+	return q.db.ExecContext(ctx, deleteClientByName, nombre)
 }
 
 const getAllClients = `-- name: GetAllClients :many
-SELECT idCliente, nombre, correo, usuario FROM Cliente
+SELECT idCliente, nombre FROM Cliente
 `
 
-type GetAllClientsRow struct {
-	Idcliente int32  `json:"idcliente"`
-	Nombre    string `json:"nombre"`
-	Correo    string `json:"correo"`
-	Usuario   string `json:"usuario"`
-}
-
-func (q *Queries) GetAllClients(ctx context.Context) ([]GetAllClientsRow, error) {
+func (q *Queries) GetAllClients(ctx context.Context) ([]Cliente, error) {
 	rows, err := q.db.QueryContext(ctx, getAllClients)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetAllClientsRow
+	var items []Cliente
 	for rows.Next() {
-		var i GetAllClientsRow
-		if err := rows.Scan(
-			&i.Idcliente,
-			&i.Nombre,
-			&i.Correo,
-			&i.Usuario,
-		); err != nil {
+		var i Cliente
+		if err := rows.Scan(&i.Idcliente, &i.Nombre); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -89,87 +63,40 @@ func (q *Queries) GetAllClients(ctx context.Context) ([]GetAllClientsRow, error)
 }
 
 const getClientById = `-- name: GetClientById :one
-SELECT idCliente, nombre, correo, usuario 
+SELECT idCliente, nombre
 FROM Cliente WHERE idCliente = ? LIMIT 1
 `
 
-type GetClientByIdRow struct {
-	Idcliente int32  `json:"idcliente"`
-	Nombre    string `json:"nombre"`
-	Correo    string `json:"correo"`
-	Usuario   string `json:"usuario"`
-}
-
-func (q *Queries) GetClientById(ctx context.Context, idcliente int32) (GetClientByIdRow, error) {
+func (q *Queries) GetClientById(ctx context.Context, idcliente int32) (Cliente, error) {
 	row := q.db.QueryRowContext(ctx, getClientById, idcliente)
-	var i GetClientByIdRow
-	err := row.Scan(
-		&i.Idcliente,
-		&i.Nombre,
-		&i.Correo,
-		&i.Usuario,
-	)
+	var i Cliente
+	err := row.Scan(&i.Idcliente, &i.Nombre)
 	return i, err
 }
 
 const getClientByName = `-- name: GetClientByName :one
-SELECT idCliente, nombre, correo, usuario 
+SELECT idCliente, nombre 
 FROM Cliente WHERE nombre = ? LIMIT 1
 `
 
-type GetClientByNameRow struct {
-	Idcliente int32  `json:"idcliente"`
-	Nombre    string `json:"nombre"`
-	Correo    string `json:"correo"`
-	Usuario   string `json:"usuario"`
-}
-
-func (q *Queries) GetClientByName(ctx context.Context, nombre string) (GetClientByNameRow, error) {
+func (q *Queries) GetClientByName(ctx context.Context, nombre string) (Cliente, error) {
 	row := q.db.QueryRowContext(ctx, getClientByName, nombre)
-	var i GetClientByNameRow
-	err := row.Scan(
-		&i.Idcliente,
-		&i.Nombre,
-		&i.Correo,
-		&i.Usuario,
-	)
+	var i Cliente
+	err := row.Scan(&i.Idcliente, &i.Nombre)
 	return i, err
 }
 
-const updateClient = `-- name: UpdateClient :exec
+const updateClient = `-- name: UpdateClient :execresult
 UPDATE Cliente
-SET nombre = ?, correo = ?, usuario = ?
+SET nombre = ?
 WHERE idCliente = ?
 `
 
 type UpdateClientParams struct {
 	Nombre    string `json:"nombre"`
-	Correo    string `json:"correo"`
-	Usuario   string `json:"usuario"`
 	Idcliente int32  `json:"idcliente"`
 }
 
-func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) error {
-	_, err := q.db.ExecContext(ctx, updateClient,
-		arg.Nombre,
-		arg.Correo,
-		arg.Usuario,
-		arg.Idcliente,
-	)
-	return err
-}
-
-const updateClientPassword = `-- name: updateClientPassword :exec
-UPDATE Cliente SET contraseña = ? 
-WHERE idCliente = ?
-`
-
-type UpdateClientPasswordParams struct {
-	Contraseña string `json:"contraseña"`
-	Idcliente  int32  `json:"idcliente"`
-}
-
-func (q *Queries) UpdateClientPassword(ctx context.Context, arg UpdateClientPasswordParams) error {
-	_, err := q.db.ExecContext(ctx, updateClientPassword, arg.Contraseña, arg.Idcliente)
-	return err
+func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateClient, arg.Nombre, arg.Idcliente)
 }

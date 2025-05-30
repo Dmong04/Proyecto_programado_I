@@ -12,17 +12,11 @@ import (
 type Administrador struct {
 	Idadministrador int32  `json:"idadministrador"`
 	Nombre          string `json:"nombre"`
-	Correo          string `json:"correo"`
-	Usuario         string `json:"usuario"`
-	Contraseña      string `json:"contraseña"`
 }
 
 type Cliente struct {
-	Idcliente  int32  `json:"idcliente"`
-	Nombre     string `json:"nombre"`
-	Correo     string `json:"correo"`
-	Usuario    string `json:"usuario"`
-	Contraseña string `json:"contraseña"`
+	Idcliente int32  `json:"idcliente"`
+	Nombre    string `json:"nombre"`
 }
 
 type Detalleviaje struct {
@@ -31,13 +25,6 @@ type Detalleviaje struct {
 	Hora           time.Time     `json:"hora"`
 	Idproveedor    sql.NullInt32 `json:"idproveedor"`
 	Idviaje        int32         `json:"idviaje"`
-}
-
-type Historial struct {
-	Idhistorial int32  `json:"idhistorial"`
-	Descrip     string `json:"descrip"`
-	Idcliente   int32  `json:"idcliente"`
-	Idreserva   int32  `json:"idreserva"`
 }
 
 type Pasajero struct {
@@ -65,6 +52,19 @@ type Telefonocliente struct {
 	Numero             string `json:"numero"`
 	Tipo               string `json:"tipo"`
 	Idcliente          int32  `json:"idcliente"`
+}
+
+type Usuario struct {
+	Idusuario       int32          `json:"idusuario"`
+	Correo          string         `json:"correo"`
+	Usuario         string         `json:"usuario"`
+	Contraseña      string         `json:"contraseña"`
+	Role            string         `json:"role"`
+	Idadministrador sql.NullInt32  `json:"idadministrador"`
+	Idcliente       sql.NullInt32  `json:"idcliente"`
+	CreatedAt       sql.NullTime   `json:"created_at"`
+	UpdatedAt       sql.NullTime   `json:"updated_at"`
+	RememberToken   sql.NullString `json:"remember_token"`
 }
 
 type Viaje struct {

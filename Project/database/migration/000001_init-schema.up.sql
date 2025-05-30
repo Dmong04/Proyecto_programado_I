@@ -14,19 +14,36 @@ CREATE TABLE IF NOT EXISTS `Administrador` (
   PRIMARY KEY (`idAdministrador`)
 ) ENGINE=InnoDB;
 
---Tabla: Usuario
-CREATE TABLE ID NOT EXISTS `Usuario` (
-  `idUsuario`INT NOT NULL AUTO_INCREMENT,
-  `correo` VARCHAR(60) NOT NULL,
-  `usuario` VARCHAR(40) NOT NULL,
-  `contraseña` VARCHAR(100) NOT NULL,
-)
-
 -- Tabla: Cliente
 CREATE TABLE IF NOT EXISTS `Cliente` (
   `idCliente` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
   PRIMARY KEY (`idCliente`)
+) ENGINE=InnoDB;
+
+-- Tabla: Usuario
+CREATE TABLE IF NOT EXISTS `Usuario` (
+  `idUsuario` INT NOT NULL AUTO_INCREMENT,
+  `correo` VARCHAR(60) NOT NULL,
+  `usuario` VARCHAR(40) NOT NULL,
+  `contraseña` VARCHAR(100) NOT NULL,
+  `role` VARCHAR(20) NOT NULL,
+  `idAdministrador` INT DEFAULT NULL,
+  `idCliente` INT DEFAULT NULL,
+  `created_at`	datetime DEFAULT NULL,
+  `updated_at`	datetime DEFAULT NULL,
+  `remember_token` VARCHAR(255),
+  PRIMARY KEY (`idUsuario`),
+  CONSTRAINT `FK_Usuario_Cliente`
+    FOREIGN KEY (`idCliente`)
+    REFERENCES `Cliente` (`idCliente`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_Usuario_Administrador`
+    FOREIGN KEY (`idAdministrador`)
+    REFERENCES `Administrador` (`idAdministrador`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
 -- Tabla: telefonoClientes
@@ -51,6 +68,14 @@ CREATE TABLE IF NOT EXISTS `Viaje` (
   PRIMARY KEY (`idViaje`)
 ) ENGINE=InnoDB;
 
+-- Tabla: Proveedor
+CREATE TABLE IF NOT EXISTS `Proveedor` (
+  `idProveedor` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(60) NOT NULL,
+  `descrip` VARCHAR(70) NOT NULL,
+  PRIMARY KEY (`idProveedor`)
+) ENGINE=InnoDB;
+
 -- Tabla: detalleViaje
 CREATE TABLE IF NOT EXISTS `detalleViaje` (
   `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
@@ -71,14 +96,6 @@ CREATE TABLE IF NOT EXISTS `detalleViaje` (
     REFERENCES `Proveedor` (`idProveedor`)
     ON DELETE SET NULL
     ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
--- Tabla: Proveedor
-CREATE TABLE IF NOT EXISTS `Proveedor` (
-  `idProveedor` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(60) NOT NULL,
-  `descrip` VARCHAR(70) NOT NULL,
-  PRIMARY KEY (`idProveedor`)
 ) ENGINE=InnoDB;
 
 -- Tabla: Reservas

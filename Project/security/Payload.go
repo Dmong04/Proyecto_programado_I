@@ -8,25 +8,25 @@ import (
 )
 
 var (
-	ErrorInvalidToken = errors.New("token inválido")
-	ErrorExpiredToken = errors.New("el token ha expirado")
+	ErrInvalidToken = errors.New("token invalido")
+	ErrExpiredToken = errors.New("token expirado")
 )
 
 type Payload struct {
 	ID        uuid.UUID `json:"id"`
-	Email     string    `json:"email"`
+	User      string    `json:"user"`
 	IssuedAt  time.Time `json:"issued_at"`
 	ExpiredAt time.Time `json:"expired_at"`
 }
 
-func NewPayload(email string, duration time.Duration) (*Payload, error) {
+func NewPayload(user string, duration time.Duration) (*Payload, error) {
 	tokenID, err := uuid.NewRandom()
 	if err != nil {
 		return nil, err
 	}
 	payload := &Payload{
 		ID:        tokenID,
-		Email:     email,
+		User:      user,
 		IssuedAt:  time.Now(),
 		ExpiredAt: time.Now().Add(duration),
 	}
@@ -34,7 +34,7 @@ func NewPayload(email string, duration time.Duration) (*Payload, error) {
 }
 func (payload *Payload) Valid() error {
 	if time.Now().After(payload.ExpiredAt) {
-		return ErrorExpiredToken
+		return ErrExpiredToken
 	}
 	return nil
 }
