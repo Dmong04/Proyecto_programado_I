@@ -35,6 +35,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		sharedRoutes.GET("api/v1/Client/all", server.GetAllClients)
 		sharedRoutes.GET("api/v1/Client/name/:name", server.GetClientByName)
 		sharedRoutes.GET("api/v1/Client/id/:id", server.GetClientByID)
+		sharedRoutes.PATCH("api/v1/Client/password/:id", server.updatePassword)
 		// Rutas de consulta a teléfonos de clientes
 		sharedRoutes.GET("api/v1/Client/Phones/:id", server.GetClientPhonesById)
 		sharedRoutes.GET("api/v1/Client/Phones/client/:idclient", server.GetClientPhonesByClientID)
@@ -52,8 +53,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
-		// Consulta de historial por consulta del admin o del cliente
-		sharedRoutes.GET("api/v1/History/:id", server.GetHistoryByID)
 	}
 	adminRoutes.Use(auth, roleMiddleware("Admin"))
 	{
@@ -63,14 +62,9 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		adminRoutes.GET("api/v1/Admin/:id", server.GetAdminByID)
 		adminRoutes.GET("api/v1/Admin/name/:name", server.GetAdminByName)
 		adminRoutes.PATCH("api/v1/Admin/update/:id", server.UpdateAdmin)
-		adminRoutes.PATCH("api/v1/Admin/update/password/:id", server.UpdateAdminPassword)
+		adminRoutes.PATCH("api/v1/Admin/update/password/:id", server.updatePassword)
 		adminRoutes.DELETE("api/v1/Admin/delete/:id", server.DeleteAdmin)
 		adminRoutes.DELETE("api/v1/Admin/delete/name/:name", server.DeleteAdminByName)
-		//CRUD Historial (Funciona)
-		adminRoutes.GET("api/v1/History/all", server.GetAllHistories)
-		adminRoutes.POST("api/v1/History", server.CreateHistory)
-		adminRoutes.PATCH("api/v1/History/update/:id", server.UpdateHistory)
-		adminRoutes.DELETE("api/v1/History/delete/:id", server.DeleteHistory)
 		//CRUD Proveedor (Funciona)
 		adminRoutes.GET("api/v1/Provider/all", server.GetAllProviders)
 		adminRoutes.POST("api/v1/Provider", server.CreateProvider)
@@ -92,7 +86,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// CRUD Client (Funciona)
 		clientRoutes.POST("api/v1/Client", server.CreateClient)
 		clientRoutes.PATCH("api/v1/Client/update/:id", server.UpdateClient)
-		clientRoutes.PATCH("api/v1/Client/password/:id", server.UpdateClientPassword)
 		clientRoutes.DELETE("api/v1/Client/delete/:id", server.DeleteClient)
 		clientRoutes.DELETE("api/v1/Client/delete/name/:name", server.DeleteClientByName)
 		// CRUD Pasajeros (Funciona)
