@@ -3,8 +3,10 @@ package api
 import (
 	"project/dto"
 	"project/security"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
 )
 
 type Server struct {
@@ -23,6 +25,15 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		tokenBuilder: tokenBuilder,
 	}
 	router := gin.Default()
+	router.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     false,
+		ValidateHeaders: false,
+	}))
 	auth := authMiddleware(tokenBuilder)
 	router.POST("api/v1/login", server.login)
 	router.POST("api/v1/User", server.createUser)
