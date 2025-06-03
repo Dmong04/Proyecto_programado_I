@@ -8,54 +8,64 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type loginRequest struct {
+type loginUserRequest struct {
+	ID       int32  `json:"idUsuario"`
 	User     string `json:"user" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-type loginResponse struct {
+type loginUserResponse struct {
 	AccessToken string       `json:"access_token"`
 	LoggedUser  userResponse `json:"logged_user"`
 	Role        string       `json:"role"`
 }
 
+type createUserResponse struct {
+	Email      string    `json:"email"`
+	User       string    `json:"user"`
+	Created_at time.Time `json:"created_at"`
+	Updated_at time.Time `json:"updated_at"`
+}
+
 type userResponse struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	User  string `json:"user"`
+	Email      string    `json:"email"`
+	User       string    `json:"user"`
+	Created_at time.Time `json:"created_at"`
+	Updated_at time.Time `json:"updated_at"`
 }
 
 func (server *Server) login(ctx *gin.Context) {
-	var request loginRequest
+	var request loginUserRequest
 	if err := ctx.ShouldBindJSON(&request); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	admin, err := server.dbtx.GetAdminByUser(ctx, request.User)
+	admin, err := server.dbtx.GetUserByUserName(ctx, request.User)
 	if err == nil {
-		if admin.Contraseña != request.Password {
+		if admin.Password != request.Password {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña incorrecta"})
 			return
 		}
-		accessToken, err := server.tokenBuilder.CreateToken(admin.Usuario, "Admin", time.Hour)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		if admin.Role == "Admin" {
+			accessToken, err := server.tokenBuilder.CreateToken(admin.User, "Admin", time.Hour)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+				return
+			}
+			response := loginUserResponse{
+				AccessToken: accessToken,
+				LoggedUser: userResponse{
+					User:  admin.User,
+					Email: admin.Email,
+				},
+				Role: "Admin",
+			}
+			ctx.JSON(http.StatusOK, response)
 			return
 		}
-		response := loginResponse{
-			AccessToken: accessToken,
-			LoggedUser: userResponse{
-				Name:  admin.Nombre,
-				Email: admin.Correo,
-				User:  admin.Usuario,
-			},
-			Role: "Admin",
-		}
-		ctx.JSON(http.StatusOK, response)
-		return
 	}
 	if err == sql.ErrNoRows {
-		client, err := server.dbtx.GetClientByUser(ctx, request.User)
+		client, err := server.dbtx.GetUserByUserName(ctx, request.User)
 		if err != nil {
 			if err == sql.ErrNoRows {
 				ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no encontrado"})
@@ -64,26 +74,27 @@ func (server *Server) login(ctx *gin.Context) {
 			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 			return
 		}
-		if client.Contraseña != request.Password {
+		if client.Password != request.Password {
 			ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña incorrecta"})
 			return
 		}
-		accessToken, err := server.tokenBuilder.CreateToken(client.Usuario, "Client", time.Hour)
-		if err != nil {
-			ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		if client.Role == "Client" {
+			accessToken, err := server.tokenBuilder.CreateToken(client.User, "Client", time.Hour)
+			if err != nil {
+				ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+				return
+			}
+			response := loginUserResponse{
+				AccessToken: accessToken,
+				LoggedUser: userResponse{
+					User:  client.User,
+					Email: client.Email,
+				},
+				Role: "Client",
+			}
+			ctx.JSON(http.StatusOK, response)
 			return
 		}
-		response := loginResponse{
-			AccessToken: accessToken,
-			LoggedUser: userResponse{
-				Name:  client.Nombre,
-				Email: client.Correo,
-				User:  client.Usuario,
-			},
-			Role: "Client",
-		}
-		ctx.JSON(http.StatusOK, response)
-		return
 	}
 	ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 }

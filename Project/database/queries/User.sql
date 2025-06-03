@@ -2,26 +2,23 @@
 SELECT idUsuario, correo, usuario, role FROM Usuario;
 
 -- name: GetUserById :one
-SELECT idUsuario, correo, usuario, role
- FROM Usuario WHERE idUsuario = ? LIMIT 1;
+SELECT idUsuario AS id, usuario AS user, correo AS email, contraseña AS password, role
+FROM Usuario
+WHERE idUsuario = ? LIMIT 1;
 
 -- name: CreateUser :execresult
-INSERT INTO Usuario (correo, usuario, contraseña, role, created_at, updated_at)
-VALUES (?, ?, ?, ?, now(), now());
+INSERT INTO Usuario (correo, usuario, contraseña, idAdministrador, idCliente, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, now(), now());
 
 -- name: UpdateUser :execresult
 UPDATE Usuario
-SET correo = ?, usuario = ?, contraseña = ?, role = ?, updated_at = now()
+SET correo = ?, usuario = ?
 WHERE idUsuario = ?;
 
 -- name: GetUserByUserName :one
 SELECT idUsuario AS id, usuario AS user, correo AS email, contraseña AS password, role
 FROM Usuario
 WHERE usuario = ? LIMIT 1;
-
-
--- name: UpdateUserRole :execresult
-UPDATE Usuario set role=? WHERE idUsuario=?;
 
 -- name: UpdateUserPassword :execresult
 UPDATE Usuario SET contraseña = ? 

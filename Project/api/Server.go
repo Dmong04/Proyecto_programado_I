@@ -25,6 +25,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router := gin.Default()
 	auth := authMiddleware(tokenBuilder)
 	router.POST("api/v1/login", server.login)
+	router.POST("api/v1/User", server.createUser)
 	// Rutas (Endpoints) De la API
 	adminRoutes := router.Group("/")
 	clientRoutes := router.Group("/")
@@ -35,7 +36,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		sharedRoutes.GET("api/v1/Client/all", server.GetAllClients)
 		sharedRoutes.GET("api/v1/Client/name/:name", server.GetClientByName)
 		sharedRoutes.GET("api/v1/Client/id/:id", server.GetClientByID)
-		sharedRoutes.PATCH("api/v1/Client/password/:id", server.updatePassword)
 		// Rutas de consulta a teléfonos de clientes
 		sharedRoutes.GET("api/v1/Client/Phones/:id", server.GetClientPhonesById)
 		sharedRoutes.GET("api/v1/Client/Phones/client/:idclient", server.GetClientPhonesByClientID)
@@ -53,6 +53,9 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
+		// Gestión de usuario
+		sharedRoutes.PATCH("api/v1/User/:id", server.updateUser)              // (no funciona)
+		sharedRoutes.PATCH("api/v1/User/password/:id", server.updatePassword) // (Funciona)
 	}
 	adminRoutes.Use(auth, roleMiddleware("Admin"))
 	{
@@ -62,7 +65,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		adminRoutes.GET("api/v1/Admin/:id", server.GetAdminByID)
 		adminRoutes.GET("api/v1/Admin/name/:name", server.GetAdminByName)
 		adminRoutes.PATCH("api/v1/Admin/update/:id", server.UpdateAdmin)
-		adminRoutes.PATCH("api/v1/Admin/update/password/:id", server.updatePassword)
 		adminRoutes.DELETE("api/v1/Admin/delete/:id", server.DeleteAdmin)
 		adminRoutes.DELETE("api/v1/Admin/delete/name/:name", server.DeleteAdminByName)
 		//CRUD Proveedor (Funciona)
@@ -80,6 +82,11 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		adminRoutes.GET("api/v1/Travel/:id", server.GetTravelById)
 		adminRoutes.DELETE("api/v1/Travel/delete/:id", server.DeleteTravel)
 		adminRoutes.PATCH("api/v1/Travel/update/:id", server.UpdateTravel)
+		// GESTION USUARIO
+		adminRoutes.GET("api/v1/User/all", server.getAllUsers)                  // (Funciona)
+		adminRoutes.GET("api/v1/User/:id", server.getUserById)                  // (Funciona)
+		adminRoutes.GET("api/v1/User/UserName/:user", server.getUserByUserName) // (Funciona)
+		adminRoutes.DELETE("api/v1/User/delete/:id", server.deleteUser)         // (no funciona)
 	}
 	clientRoutes.Use(auth, roleMiddleware("Client"))
 	{
