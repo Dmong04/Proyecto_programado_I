@@ -6,28 +6,24 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ENGI
 -- Usar base de datos
 USE `coco_tours_db_v2`;
 
--- Tabla Cliente
-CREATE TABLE Cliente (
-  idCliente INT AUTO_INCREMENT PRIMARY KEY
+CREATE TABLE IF NOT EXISTS Cliente (
+  idCliente INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL
 );
 
--- Tabla telefonosClientes
-CREATE TABLE telefonosClientes (
+CREATE TABLE IF NOT EXISTS telefonosClientes (
   idtelefonosClientes INT AUTO_INCREMENT PRIMARY KEY,
   idCliente INT NOT NULL,
   telefono VARCHAR(20) NOT NULL,
   FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
 );
 
--- Tabla Administrador
-CREATE TABLE Administrador (
-  idAdministrador INT AUTO_INCREMENT PRIMARY KEY
+CREATE TABLE IF NOT EXISTS Administrador (
+  idAdministrador INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL
 );
 
--- Tabla Usuario
-CREATE TABLE Usuario (
+CREATE TABLE IF NOT EXISTS Usuario (
   idUsuario INT AUTO_INCREMENT PRIMARY KEY,
   correo VARCHAR(70) UNIQUE NOT NULL,
   usuario VARCHAR(30) UNIQUE NOT NULL,
@@ -38,41 +34,36 @@ CREATE TABLE Usuario (
   FOREIGN KEY (idAdmin) REFERENCES Administrador(idAdministrador)
 );
 
--- Tabla Extra
-CREATE TABLE Extra (
+CREATE TABLE IF NOT EXISTS Extra (
   idExtra INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(40) NOT NULL,
   descrip VARCHAR(50) NOT NULL,
-  precioPersona DECIMAL NOT NULL
+  precioPersona DECIMAL(10,2) NOT NULL
 );
 
--- Tabla detalleExtra
-CREATE TABLE detalleExtra (
+CREATE TABLE IF NOT EXISTS detalleExtra (
   idDetalleExtra INT AUTO_INCREMENT PRIMARY KEY,
   cantPersona INT NOT NULL,
-  -- precio se omitirá si no se define la expresión
+  precio DECIMAL(10,2) GENERATED ALWAYS AS (cantPersona * 1.0) VIRTUAL, -- puedes ajustar esto si tienes acceso al precioPersona
   idExtra INT NOT NULL,
   FOREIGN KEY (idExtra) REFERENCES Extra(idExtra)
 );
 
--- Tabla Proveedor
-CREATE TABLE Proveedor (
+CREATE TABLE IF NOT EXISTS Proveedor (
   idProveedor INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(50) NOT NULL,
   descrip VARCHAR(60) NOT NULL,
   correo VARCHAR(70) NOT NULL
 );
 
--- Tabla telefonosProveedor
-CREATE TABLE telefonosProveedor (
-  idTelefonoProovedor INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS telefonosProveedor (
+  idTelefonoProveedor INT AUTO_INCREMENT PRIMARY KEY,
   telefono VARCHAR(20) NOT NULL,
   idProveedor INT NOT NULL,
   FOREIGN KEY (idProveedor) REFERENCES Proveedor(idProveedor)
 );
 
--- Tabla Viaje
-CREATE TABLE Viaje (
+CREATE TABLE IF NOT EXISTS Viaje (
   idViaje INT AUTO_INCREMENT PRIMARY KEY,
   tipo VARCHAR(30) NOT NULL,
   descrip VARCHAR(60) NOT NULL,
@@ -80,24 +71,25 @@ CREATE TABLE Viaje (
   destino VARCHAR(40) NOT NULL
 );
 
--- Tabla DetalleViaje
-CREATE TABLE DetalleViaje (
+CREATE TABLE IF NOT EXISTS DetalleViaje (
   idDetalleViaje INT AUTO_INCREMENT PRIMARY KEY,
   numPasajeros VARCHAR(4) NOT NULL,
-  precio DECIMAL NOT NULL,
+  precio DECIMAL(10,2) NOT NULL,
   idViaje INT NOT NULL,
   idProveedor INT NOT NULL,
   FOREIGN KEY (idViaje) REFERENCES Viaje(idViaje),
   FOREIGN KEY (idProveedor) REFERENCES Proveedor(idProveedor)
 );
 
--- Tabla Reserva
-CREATE TABLE Reserva (
+CREATE TABLE IF NOT EXISTS Reserva (
   idReserva INT AUTO_INCREMENT PRIMARY KEY,
-  fecha VARCHAR(20) NOT NULL,
-  hora VARCHAR(20) NOT NULL,
+  fecha DATE NOT NULL,
+  hora TIME NOT NULL,
   descrip VARCHAR(60) NOT NULL,
-  idExtra INT,
+  subtotalViaje DECIMAL(10,2) GENERATED ALWAYS AS (0) VIRTUAL, -- reemplazar por expresión real
+  subtotalExtra DECIMAL(10,2) GENERATED ALWAYS AS (0) VIRTUAL, -- reemplazar por expresión real
+  total DECIMAL(10,2) GENERATED ALWAYS AS (subtotalViaje + subtotalExtra) VIRTUAL,
+  idExtra INT DEFAULT NULL,
   idViaje INT NOT NULL,
   idUsuario INT NOT NULL,
   FOREIGN KEY (idExtra) REFERENCES detalleExtra(idDetalleExtra),
@@ -105,7 +97,3 @@ CREATE TABLE Reserva (
   FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
 );
 
--- Restaurar configuración original
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
