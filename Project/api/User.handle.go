@@ -29,8 +29,8 @@ func (server *Server) createUser(ctx *gin.Context) {
 	}
 	idclient := sql.NullInt32{}
 	if req.Idcliente != nil {
-		idadmin.Int32 = *req.Idcliente
-		idadmin.Valid = true
+		idclient.Int32 = *req.Idcliente
+		idclient.Valid = true
 	}
 	args := dto.CreateUserParams{
 		Usuario:         req.User,

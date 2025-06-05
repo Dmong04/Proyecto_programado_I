@@ -37,6 +37,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	auth := authMiddleware(tokenBuilder)
 	router.POST("api/v1/login", server.login)
 	router.POST("api/v1/User", server.createUser)
+	router.POST("api/v1/Client", server.CreateClient)
 	// Rutas (Endpoints) De la API
 	adminRoutes := router.Group("/")
 	clientRoutes := router.Group("/")
@@ -102,7 +103,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	clientRoutes.Use(auth, roleMiddleware("Client"))
 	{
 		// CRUD Client (Funciona)
-		clientRoutes.POST("api/v1/Client", server.CreateClient)
 		clientRoutes.PATCH("api/v1/Client/update/:id", server.UpdateClient)
 		clientRoutes.DELETE("api/v1/Client/delete/:id", server.DeleteClient)
 		clientRoutes.DELETE("api/v1/Client/delete/name/:name", server.DeleteClientByName)
