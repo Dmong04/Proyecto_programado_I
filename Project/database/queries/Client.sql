@@ -1,25 +1,21 @@
 -- name: GetAllClients :many
-SELECT idCliente, nombre, correo, usuario FROM Cliente;
+SELECT idCliente, nombre FROM Cliente;
 
 -- name: GetClientById :one
-SELECT idCliente, nombre, correo, usuario 
+SELECT idCliente, nombre
 FROM Cliente WHERE idCliente = ? LIMIT 1;
 
 -- name: GetClientByName :one
-SELECT idCliente, nombre, correo, usuario 
+SELECT idCliente, nombre 
 FROM Cliente WHERE nombre = ? LIMIT 1;
 
 -- name: CreateClient :execresult
-INSERT INTO Cliente (nombre, correo, usuario, contraseña)
-VALUES (?, ?, ?, ?);
+INSERT INTO Cliente (nombre)
+VALUES (?);
 
 -- name: UpdateClient :execresult
 UPDATE Cliente
-SET nombre = ?, correo = ?, usuario = ?
-WHERE idCliente = ?;
-
--- name: UpdateClientPassword :execresult
-UPDATE Cliente SET contraseña = ? 
+SET nombre = ?
 WHERE idCliente = ?;
 
 -- name: DeleteClient :execresult
@@ -27,7 +23,3 @@ DELETE FROM Cliente WHERE idCliente = ?;
 
 -- name: DeleteClientByName :execresult
 DELETE FROM Cliente WHERE nombre = ?;
-
--- name: GetClientByUser :one
-SELECT * FROM Cliente
-WHERE usuario = ? LIMIT 1;

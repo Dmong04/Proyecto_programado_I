@@ -3,8 +3,10 @@ package api
 import (
 	"project/dto"
 	"project/security"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	cors "github.com/itsjamie/gin-cors"
 )
 
 type Server struct {
@@ -23,8 +25,18 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		tokenBuilder: tokenBuilder,
 	}
 	router := gin.Default()
+	router.Use(cors.Middleware(cors.Config{
+		Origins:         "*",
+		Methods:         "GET, PUT, POST, DELETE",
+		RequestHeaders:  "Origin, Authorization, Content-Type",
+		ExposedHeaders:  "",
+		MaxAge:          50 * time.Second,
+		Credentials:     false,
+		ValidateHeaders: false,
+	}))
 	auth := authMiddleware(tokenBuilder)
 	router.POST("api/v1/login", server.login)
+	router.POST("api/v1/User", server.createUser)
 	// Rutas (Endpoints) De la API
 	adminRoutes := router.Group("/")
 	clientRoutes := router.Group("/")
@@ -53,8 +65,9 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
-		// Consulta de historial por consulta del admin o del cliente
-		sharedRoutes.GET("api/v1/History/:id", server.GetHistoryByID)
+		// Gestión de usuario
+		sharedRoutes.PATCH("api/v1/User/:id", server.updateUser)              // (no funciona)
+		sharedRoutes.PATCH("api/v1/User/password/:id", server.updatePassword) // (Funciona)
 	}
 	adminRoutes.Use(auth, roleMiddleware("Admin"))
 	{
@@ -64,14 +77,8 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		adminRoutes.GET("api/v1/Admin/:id", server.GetAdminByID)
 		adminRoutes.GET("api/v1/Admin/name/:name", server.GetAdminByName)
 		adminRoutes.PATCH("api/v1/Admin/update/:id", server.UpdateAdmin)
-		adminRoutes.PATCH("api/v1/Admin/update/password/:id", server.UpdateAdminPassword)
 		adminRoutes.DELETE("api/v1/Admin/delete/:id", server.DeleteAdmin)
 		adminRoutes.DELETE("api/v1/Admin/delete/name/:name", server.DeleteAdminByName)
-		//CRUD Historial (Funciona)
-		adminRoutes.GET("api/v1/History/all", server.GetAllHistories)
-		adminRoutes.POST("api/v1/History", server.CreateHistory)
-		adminRoutes.PATCH("api/v1/History/update/:id", server.UpdateHistory)
-		adminRoutes.DELETE("api/v1/History/delete/:id", server.DeleteHistory)
 		//CRUD Proveedor (Funciona)
 		adminRoutes.GET("api/v1/Provider/all", server.GetAllProviders)
 		adminRoutes.POST("api/v1/Provider", server.CreateProvider)
@@ -87,12 +94,16 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		adminRoutes.GET("api/v1/Travel/:id", server.GetTravelById)
 		adminRoutes.DELETE("api/v1/Travel/delete/:id", server.DeleteTravel)
 		adminRoutes.PATCH("api/v1/Travel/update/:id", server.UpdateTravel)
+		// GESTION USUARIO
+		adminRoutes.GET("api/v1/User/all", server.getAllUsers)                  // (Funciona)
+		adminRoutes.GET("api/v1/User/:id", server.getUserById)                  // (Funciona)
+		adminRoutes.GET("api/v1/User/UserName/:user", server.getUserByUserName) // (Funciona)
+		adminRoutes.DELETE("api/v1/User/delete/:id", server.deleteUser)         // (no funciona)
 	}
 	clientRoutes.Use(auth, roleMiddleware("Client"))
 	{
 		// CRUD Client (Funciona)
 		clientRoutes.PATCH("api/v1/Client/update/:id", server.UpdateClient)
-		clientRoutes.PATCH("api/v1/Client/password/:id", server.UpdateClientPassword)
 		clientRoutes.DELETE("api/v1/Client/delete/:id", server.DeleteClient)
 		clientRoutes.DELETE("api/v1/Client/delete/name/:name", server.DeleteClientByName)
 		// CRUD Pasajeros (Funciona)
