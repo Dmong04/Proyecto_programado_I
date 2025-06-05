@@ -28,12 +28,13 @@ func (server *Server) CreateClient(ctx *gin.Context) {
 		return
 	}
 	args := req.Nombre
-	client, err := server.dbtx.CreateClient(ctx, args)
+	result, err := server.dbtx.CreateClient(ctx, args)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, client)
+	var lastId, _ = result.LastInsertId()
+	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
 
 type getClientByIDRequest struct {

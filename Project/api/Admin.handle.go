@@ -28,12 +28,13 @@ func (server *Server) CreateAdmin(ctx *gin.Context) {
 		return
 	}
 	params := req.Name
-	admin, err := server.dbtx.CreateAdmin(ctx, params)
+	result, err := server.dbtx.CreateAdmin(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, admin)
+	var lastId, _ = result.LastInsertId()
+	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
 
 type getAdminByIDRequest struct {
