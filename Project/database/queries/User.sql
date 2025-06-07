@@ -1,5 +1,5 @@
 -- name: GetAllUsers :many
-SELECT idUsuario, correo, usuario, role FROM Usuario;
+SELECT idUsuario, correo, usuario, role, idAdministrador, idCliente FROM Usuario;
 
 -- name: GetUserById :one
 SELECT idUsuario AS id, usuario AS user, correo AS email, contraseña AS password, role

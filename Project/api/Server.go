@@ -45,7 +45,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	sharedRoutes.Use(auth, roleMiddleware("Admin", "Client"))
 	{
 		// Rutas de consulta de clientes
-		sharedRoutes.GET("api/v1/Client/all", server.GetAllClients)
 		sharedRoutes.GET("api/v1/Client/name/:name", server.GetClientByName)
 		sharedRoutes.GET("api/v1/Client/id/:id", server.GetClientByID)
 		// Rutas de consulta a teléfonos de clientes
@@ -71,6 +70,8 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	}
 	adminRoutes.Use(auth, roleMiddleware("Admin"))
 	{
+		// All clients
+		adminRoutes.GET("api/v1/Client/all", server.GetAllClients)
 		// CRUD Aministrador (Funciona)
 		adminRoutes.GET("api/v1/Admin/all", server.GetAllAdmins)
 		adminRoutes.POST("api/v1/Admin", server.CreateAdmin)

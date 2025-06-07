@@ -42,14 +42,16 @@ func (q *Queries) DeleteUser(ctx context.Context, idusuario int32) (sql.Result, 
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT idUsuario, correo, usuario, role FROM Usuario
+SELECT idUsuario, correo, usuario, role, idAdministrador, idCliente FROM Usuario
 `
 
 type GetAllUsersRow struct {
-	Idusuario int32  `json:"idusuario"`
-	Correo    string `json:"correo"`
-	Usuario   string `json:"usuario"`
-	Role      string `json:"role"`
+	Idusuario       int32         `json:"idusuario"`
+	Correo          string        `json:"correo"`
+	Usuario         string        `json:"usuario"`
+	Role            string        `json:"role"`
+	Idadministrador sql.NullInt32 `json:"idadministrador"`
+	Idcliente       sql.NullInt32 `json:"idcliente"`
 }
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
@@ -66,6 +68,8 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
 			&i.Correo,
 			&i.Usuario,
 			&i.Role,
+			&i.Idadministrador,
+			&i.Idcliente,
 		); err != nil {
 			return nil, err
 		}
