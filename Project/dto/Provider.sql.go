@@ -121,6 +121,6 @@ type UpdateProviderByNameParams struct {
 }
 
 func (q *Queries) UpdateProviderByName(ctx context.Context, arg UpdateProviderByNameParams) error {
-	_, err := q.db.ExecContext(ctx, updateProviderByName, arg.Nombre, arg.Descrip, arg.Nombre_2)
+	_, err := q.db.ExecContext(ctx, updateProviderByName, arg.Nombre_2, arg.Descrip, arg.Nombre)
 	return err
 }
