@@ -107,17 +107,26 @@ func (q *Queries) GetUserByEmail(ctx context.Context, correo string) (Usuario, e
 }
 
 const getUserById = `-- name: GetUserById :one
-SELECT idUsuario AS id, usuario AS user, correo AS email, contraseña AS password, role
+SELECT 
+  idUsuario AS id, 
+  usuario AS user, 
+  correo AS email, 
+  contraseña AS password, 
+  role,
+  idCliente,
+  idAdministrador
 FROM Usuario
 WHERE idUsuario = ? LIMIT 1
 `
 
 type GetUserByIdRow struct {
-	ID       int32  `json:"id"`
-	User     string `json:"user"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	ID              int32         `json:"id"`
+	User            string        `json:"user"`
+	Email           string        `json:"email"`
+	Password        string        `json:"password"`
+	Role            string        `json:"role"`
+	Idcliente       sql.NullInt32 `json:"idcliente"`
+	Idadministrador sql.NullInt32 `json:"idadministrador"`
 }
 
 func (q *Queries) GetUserById(ctx context.Context, idusuario int32) (GetUserByIdRow, error) {
@@ -129,6 +138,8 @@ func (q *Queries) GetUserById(ctx context.Context, idusuario int32) (GetUserById
 		&i.Email,
 		&i.Password,
 		&i.Role,
+		&i.Idcliente,
+		&i.Idadministrador,
 	)
 	return i, err
 }

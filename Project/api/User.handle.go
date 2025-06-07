@@ -162,6 +162,37 @@ func (server *Server) deleteUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+
+	// Obtener el usuario para saber si tiene cliente o administrador asociado
+	user, err := server.dbtx.GetUserById(ctx, req.ID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+
+	// Si tiene cliente, eliminarlo
+	if user.Idcliente.Valid {
+		_, err := server.dbtx.DeleteClient(ctx, user.Idcliente.Int32)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error al eliminar cliente"})
+			return
+		}
+	}
+
+	// Si tiene administrador, eliminarlo
+	if user.Idadministrador.Valid {
+		_, err := server.dbtx.DeleteAdmin(ctx, user.Idadministrador.Int32)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error al eliminar administrador"})
+			return
+		}
+	}
+
+	// Eliminar el usuario
 	result, err := server.dbtx.DeleteUser(ctx, req.ID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
