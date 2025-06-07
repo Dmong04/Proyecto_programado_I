@@ -68,6 +68,7 @@ type Usuario struct {
 }
 
 type Viaje struct {
-	Idviaje   int32  `json:"idviaje"`
-	Tipoviaje string `json:"tipoviaje"`
+	Idviaje     int32  `json:"idviaje"`
+	Tipoviaje   string `json:"tipoviaje"`
+	Descripcion string `json:"descripcion"`
 }

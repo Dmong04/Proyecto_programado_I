@@ -4,12 +4,14 @@ import (
 	"database/sql"
 	"net/http"
 	"project/dto"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type CreateTravelRequest struct {
-	Tipoviaje string `json:"tipoviaje"`
+	Tipoviaje   string `json:"tipoviaje"`
+	Descripcion string `json:"descripcion"`
 }
 
 func (server *Server) CreateTravel(ctx *gin.Context) {
@@ -18,7 +20,10 @@ func (server *Server) CreateTravel(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	params := request.Tipoviaje
+	params := dto.CreateTravelParams{
+		Tipoviaje:   request.Tipoviaje,
+		Descripcion: request.Descripcion,
+	}
 	travel, err := server.dbtx.CreateTravel(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -27,27 +32,27 @@ func (server *Server) CreateTravel(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, travel)
 }
 
-type deleteTravelRequest struct {
-	ID int32 `json:"id" binding:"required"`
-}
-
 func (server *Server) DeleteTravel(ctx *gin.Context) {
-	var request deleteTravelRequest
-	if err := ctx.ShouldBindJSON(&request); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+	idParam := ctx.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID inválido"})
 		return
 	}
-	err := server.dbtx.DeleteTravel(ctx, request.ID)
+
+	err = server.dbtx.DeleteTravel(ctx, int32(id))
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Viaje no encontrado"})
 			return
 		}
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Error al eliminar viaje"})
 		return
 	}
+
 	ctx.JSON(http.StatusOK, gin.H{"message": "Viaje eliminado con éxito"})
 }
+
 func (server *Server) GetAllTravels(ctx *gin.Context) {
 	travels, err := server.dbtx.GetAllTravels(ctx)
 	if err != nil {
@@ -84,7 +89,8 @@ type updateTravelRequest struct {
 }
 
 type updateTravelBodyRequest struct {
-	Tipoviaje string `json:"tipoviaje"`
+	Tipoviaje   string `json:"tipoviaje"`
+	Descripcion string `json:"descripcion"`
 }
 
 func (server *Server) UpdateTravel(ctx *gin.Context) {
@@ -99,7 +105,8 @@ func (server *Server) UpdateTravel(ctx *gin.Context) {
 		return
 	}
 	params := dto.UpdateTravelParams{
-		Tipoviaje: bodyReq.Tipoviaje,
+		Tipoviaje:   bodyReq.Tipoviaje,
+		Descripcion: bodyReq.Descripcion,
 	}
 	err := server.dbtx.UpdateTravel(ctx, params)
 	if err != nil {

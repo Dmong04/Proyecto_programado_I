@@ -11,12 +11,17 @@ import (
 )
 
 const createTravel = `-- name: CreateTravel :execresult
-INSERT INTO Viaje (tipoViaje)
-VALUES (?)
+INSERT INTO Viaje (tipoViaje, descripcion)
+VALUES (?, ?)
 `
 
-func (q *Queries) CreateTravel(ctx context.Context, tipoviaje string) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createTravel, tipoviaje)
+type CreateTravelParams struct {
+	Tipoviaje   string `json:"tipoviaje"`
+	Descripcion string `json:"descripcion"`
+}
+
+func (q *Queries) CreateTravel(ctx context.Context, arg CreateTravelParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createTravel, arg.Tipoviaje, arg.Descripcion)
 }
 
 const deleteTravel = `-- name: DeleteTravel :exec
@@ -29,7 +34,7 @@ func (q *Queries) DeleteTravel(ctx context.Context, idviaje int32) error {
 }
 
 const getAllTravels = `-- name: GetAllTravels :many
-SELECT idviaje, tipoviaje FROM Viaje
+SELECT idviaje, tipoviaje, descripcion FROM Viaje
 `
 
 func (q *Queries) GetAllTravels(ctx context.Context) ([]Viaje, error) {
@@ -41,7 +46,7 @@ func (q *Queries) GetAllTravels(ctx context.Context) ([]Viaje, error) {
 	var items []Viaje
 	for rows.Next() {
 		var i Viaje
-		if err := rows.Scan(&i.Idviaje, &i.Tipoviaje); err != nil {
+		if err := rows.Scan(&i.Idviaje, &i.Tipoviaje, &i.Descripcion); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -56,28 +61,29 @@ func (q *Queries) GetAllTravels(ctx context.Context) ([]Viaje, error) {
 }
 
 const getTravelById = `-- name: GetTravelById :one
-SELECT idviaje, tipoviaje FROM Viaje WHERE idViaje = ? LIMIT 1
+SELECT idviaje, tipoviaje, descripcion FROM Viaje WHERE idViaje = ? LIMIT 1
 `
 
 func (q *Queries) GetTravelById(ctx context.Context, idviaje int32) (Viaje, error) {
 	row := q.db.QueryRowContext(ctx, getTravelById, idviaje)
 	var i Viaje
-	err := row.Scan(&i.Idviaje, &i.Tipoviaje)
+	err := row.Scan(&i.Idviaje, &i.Tipoviaje, &i.Descripcion)
 	return i, err
 }
 
 const updateTravel = `-- name: UpdateTravel :exec
 UPDATE Viaje
-SET tipoViaje = ?
+SET tipoViaje = ?, descripcion = ?
 WHERE idViaje = ?
 `
 
 type UpdateTravelParams struct {
-	Tipoviaje string `json:"tipoviaje"`
-	Idviaje   int32  `json:"idviaje"`
+	Tipoviaje   string `json:"tipoviaje"`
+	Descripcion string `json:"descripcion"`
+	Idviaje     int32  `json:"idviaje"`
 }
 
 func (q *Queries) UpdateTravel(ctx context.Context, arg UpdateTravelParams) error {
-	_, err := q.db.ExecContext(ctx, updateTravel, arg.Tipoviaje, arg.Idviaje)
+	_, err := q.db.ExecContext(ctx, updateTravel, arg.Tipoviaje, arg.Descripcion, arg.Idviaje)
 	return err
 }
