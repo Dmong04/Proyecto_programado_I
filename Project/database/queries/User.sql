@@ -20,13 +20,20 @@ VALUES (?, ?, ?, ?, ?, now(), now());
 
 -- name: UpdateUser :execresult
 UPDATE Usuario
-SET correo = ?, usuario = ?
+SET usuario = ?, correo = ?
 WHERE idUsuario = ?;
 
 -- name: GetUserByUserName :one
-SELECT idUsuario AS id, usuario AS user, correo AS email, contraseña AS password, role
+SELECT 
+  idUsuario AS id,
+  usuario AS user,
+  correo AS email,
+  contraseña AS password,
+  role,
+  created_at,
+  updated_at
 FROM Usuario
-WHERE usuario = ? LIMIT 1;
+WHERE usuario = ?;
 
 -- name: UpdateUserPassword :execresult
 UPDATE Usuario SET contraseña = ? 

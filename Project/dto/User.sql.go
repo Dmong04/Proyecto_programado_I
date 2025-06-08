@@ -145,17 +145,26 @@ func (q *Queries) GetUserById(ctx context.Context, idusuario int32) (GetUserById
 }
 
 const getUserByUserName = `-- name: GetUserByUserName :one
-SELECT idUsuario AS id, usuario AS user, correo AS email, contraseña AS password, role
+SELECT 
+  idUsuario AS id,
+  usuario AS user,
+  correo AS email,
+  contraseña AS password,
+  role,
+  created_at,
+  updated_at
 FROM Usuario
-WHERE usuario = ? LIMIT 1
+WHERE usuario = ?
 `
 
 type GetUserByUserNameRow struct {
-	ID       int32  `json:"id"`
-	User     string `json:"user"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	Role     string `json:"role"`
+	ID        int32        `json:"id"`
+	User      string       `json:"user"`
+	Email     string       `json:"email"`
+	Password  string       `json:"password"`
+	Role      string       `json:"role"`
+	CreatedAt sql.NullTime `json:"created_at"`
+	UpdatedAt sql.NullTime `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByUserName(ctx context.Context, usuario string) (GetUserByUserNameRow, error) {
@@ -167,24 +176,26 @@ func (q *Queries) GetUserByUserName(ctx context.Context, usuario string) (GetUse
 		&i.Email,
 		&i.Password,
 		&i.Role,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const updateUser = `-- name: UpdateUser :execresult
 UPDATE Usuario
-SET correo = ?, usuario = ?
+SET usuario = ?, correo = ?
 WHERE idUsuario = ?
 `
 
 type UpdateUserParams struct {
-	Correo    string `json:"correo"`
 	Usuario   string `json:"usuario"`
+	Correo    string `json:"correo"`
 	Idusuario int32  `json:"idusuario"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateUser, arg.Correo, arg.Usuario, arg.Idusuario)
+	return q.db.ExecContext(ctx, updateUser, arg.Usuario, arg.Correo, arg.Idusuario)
 }
 
 const updateUserPassword = `-- name: UpdateUserPassword :execresult

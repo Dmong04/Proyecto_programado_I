@@ -27,7 +27,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router := gin.Default()
 	router.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
-		Methods:         "GET, PUT, POST, DELETE",
+		Methods:         "GET, PUT, POST, DELETE, PATCH",
 		RequestHeaders:  "Origin, Authorization, Content-Type",
 		ExposedHeaders:  "",
 		MaxAge:          50 * time.Second,
@@ -45,6 +45,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	sharedRoutes.Use(auth, roleMiddleware("Admin", "Client"))
 	{
 		// Rutas de consulta de clientes
+		sharedRoutes.DELETE("api/v1/Client/delete/:id", server.DeleteClient)
 		sharedRoutes.GET("api/v1/Client/name/:name", server.GetClientByName)
 		sharedRoutes.GET("api/v1/Client/id/:id", server.GetClientByID)
 		// Rutas de consulta a teléfonos de clientes
@@ -65,8 +66,9 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
 		// Gestión de usuario
-		sharedRoutes.PATCH("api/v1/User/:id", server.updateUser)              // (no funciona)
-		sharedRoutes.PATCH("api/v1/User/password/:id", server.updatePassword) // (Funciona)
+		sharedRoutes.PATCH("api/v1/User/update/:id", server.updateUser) // (Funciona)
+		sharedRoutes.PATCH("api/v1/User/password/:id", server.updatePassword)
+		sharedRoutes.DELETE("api/v1/User/delete/:id", server.deleteUser) // (Funciona)
 	}
 	adminRoutes.Use(auth, roleMiddleware("Admin"))
 	{
@@ -98,14 +100,12 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// GESTION USUARIO
 		adminRoutes.GET("api/v1/User/all", server.getAllUsers)                  // (Funciona)
 		adminRoutes.GET("api/v1/User/:id", server.getUserById)                  // (Funciona)
-		adminRoutes.GET("api/v1/User/UserName/:user", server.getUserByUserName) // (Funciona)
-		adminRoutes.DELETE("api/v1/User/delete/:id", server.deleteUser)         // (no funciona)
+		adminRoutes.GET("api/v1/User/UserName/:user", server.getUserByUserName) // (Funciona)       // (Funciona)
 	}
 	clientRoutes.Use(auth, roleMiddleware("Client"))
 	{
 		// CRUD Client (Funciona)
 		clientRoutes.PATCH("api/v1/Client/update/:id", server.UpdateClient)
-		clientRoutes.DELETE("api/v1/Client/delete/:id", server.DeleteClient)
 		clientRoutes.DELETE("api/v1/Client/delete/name/:name", server.DeleteClientByName)
 		// CRUD Pasajeros (Funciona)
 		clientRoutes.POST("api/v1/Passengers", server.CreatePassenger)

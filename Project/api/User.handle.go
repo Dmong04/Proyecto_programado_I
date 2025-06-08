@@ -48,12 +48,6 @@ func (server *Server) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
 
-type updateUserRequest struct {
-	User   string `json:"user"`
-	Correo string `json:"email"`
-	ID     int32  `json:"id"`
-}
-
 func (server *Server) getAllUsers(ctx *gin.Context) {
 	users, err := server.dbtx.GetAllUsers(ctx)
 	if err != nil {
@@ -83,28 +77,43 @@ func (server *Server) getUserById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, user)
 }
 
+type updateUserRequest struct {
+	User      string `json:"usuario"`
+	Correo    string `json:"correo"`
+	Idusuario int32  `json:"idusuario"`
+}
+
 func (server *Server) updateUser(ctx *gin.Context) {
 	var req updateUserRequest
+
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+
 	args := dto.UpdateUserParams{
 		Usuario:   req.User,
 		Correo:    req.Correo,
-		Idusuario: req.ID,
+		Idusuario: req.Idusuario,
 	}
+
 	result, err := server.dbtx.UpdateUser(ctx, args)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
-			return
-		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	var rows, _ = result.RowsAffected()
-	ctx.JSON(http.StatusOK, gin.H{"rows_affected": rows})
+
+	rows, err := result.RowsAffected()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	if rows == 0 {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado o sin cambios"})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, args)
 }
 
 type updatePasswordRequest struct {
