@@ -6,6 +6,7 @@ import (
 	"project/dto"
 
 	"github.com/gin-gonic/gin"
+	"fmt"
 )
 
 func (server *Server) GetAllProviders(ctx *gin.Context) {
@@ -138,6 +139,9 @@ func (server *Server) UpdateProviderByName(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
+
+	fmt.Printf("Body recibido: %+v\n", bodyReq)
+
 	params := dto.UpdateProviderByNameParams{
 		Nombre_2:        bodyReq.Name_2,
 		Descrip:         bodyReq.Descript,
