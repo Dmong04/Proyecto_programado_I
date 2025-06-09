@@ -105,6 +105,7 @@ func (server *Server) UpdateTravel(ctx *gin.Context) {
 		return
 	}
 	params := dto.UpdateTravelParams{
+		Idviaje:     request.ID,
 		Tipoviaje:   bodyReq.Tipoviaje,
 		Descripcion: bodyReq.Descripcion,
 	}

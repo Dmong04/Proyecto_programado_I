@@ -27,7 +27,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	router := gin.Default()
 	router.Use(cors.Middleware(cors.Config{
 		Origins:         "*",
-		Methods:         "GET, PUT, POST, DELETE, OPTIONS",
+		Methods:         "GET, PATCH, POST, DELETE, OPTIONS",
 		RequestHeaders:  "Origin, Authorization, Content-Type",
 		ExposedHeaders:  "",
 		MaxAge:          50 * time.Second,

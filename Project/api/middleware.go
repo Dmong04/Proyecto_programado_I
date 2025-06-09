@@ -11,6 +11,10 @@ import (
 
 func authMiddleware(tokenBuilder security.Builder) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		if ctx.Request.Method == http.MethodOptions {
+			ctx.Status(http.StatusOK)
+			return
+		}
 		authHeader := ctx.GetHeader("authorization")
 		if len(authHeader) == 0 {
 			err := errors.New("no existe un token de autorización")
