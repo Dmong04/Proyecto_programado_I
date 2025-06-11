@@ -11,7 +11,7 @@ import (
 
 const (
 	dbDriver  = "mysql"
-	dbSource  = "root:1234@tcp(localhost:3306)/coco_tours_db_v2?charset=utf8mb4&parseTime=true&loc=Local"
+	dbSource  = "root:@tcp(localhost:3306)/coco_tours_db?charset=utf8mb4&parseTime=true&loc=Local"
 	serverUrl = "127.0.0.1:8080"
 )
 

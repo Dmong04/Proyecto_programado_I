@@ -3,97 +3,144 @@ SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ENGINE_SUBSTITUTION';
 
--- Usar base de datos
-USE `coco_tours_db_v2`;
+-- Crear y usar base de datos
+CREATE SCHEMA IF NOT EXISTS `coco_tours_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `coco_tours_db`;
 
-CREATE TABLE IF NOT EXISTS Cliente (
-  idCliente INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL
-);
+-- Tabla: Administrador
+CREATE TABLE IF NOT EXISTS `Administrador` (
+  `idAdministrador` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(60) NOT NULL,
+  PRIMARY KEY (`idAdministrador`)
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS telefonosClientes (
-  idtelefonosClientes INT AUTO_INCREMENT PRIMARY KEY,
-  idCliente INT NOT NULL,
-  telefono VARCHAR(20) NOT NULL,
-  FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente)
-);
+-- Tabla: Cliente
+CREATE TABLE IF NOT EXISTS `Cliente` (
+  `idCliente` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(60) NOT NULL,
+  PRIMARY KEY (`idCliente`)
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Administrador (
-  idAdministrador INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL
-);
+-- Tabla: Usuario
+CREATE TABLE IF NOT EXISTS `Usuario` (
+  `idUsuario` INT NOT NULL AUTO_INCREMENT,
+  `correo` VARCHAR(60) NOT NULL,
+  `usuario` VARCHAR(40) NOT NULL,
+  `contraseña` VARCHAR(100) NOT NULL,
+  `role` VARCHAR(20) NOT NULL,
+  `idAdministrador` INT DEFAULT NULL,
+  `idCliente` INT DEFAULT NULL,
+  `created_at`	datetime DEFAULT NULL,
+  `updated_at`	datetime DEFAULT NULL,
+  `remember_token` VARCHAR(255),
+  PRIMARY KEY (`idUsuario`),
+  CONSTRAINT `FK_Usuario_Cliente`
+    FOREIGN KEY (`idCliente`)
+    REFERENCES `Cliente` (`idCliente`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_Usuario_Administrador`
+    FOREIGN KEY (`idAdministrador`)
+    REFERENCES `Administrador` (`idAdministrador`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Usuario (
-  idUsuario INT AUTO_INCREMENT PRIMARY KEY,
-  correo VARCHAR(70) UNIQUE NOT NULL,
-  usuario VARCHAR(30) UNIQUE NOT NULL,
-  contraseña VARCHAR(15) NOT NULL,
-  idCliente INT DEFAULT NULL,
-  idAdmin INT DEFAULT NULL,
-  FOREIGN KEY (idCliente) REFERENCES Cliente(idCliente),
-  FOREIGN KEY (idAdmin) REFERENCES Administrador(idAdministrador)
-);
+-- Tabla: telefonoClientes
+CREATE TABLE IF NOT EXISTS `telefonoClientes` (
+  `idtelefonoClientes` INT NOT NULL AUTO_INCREMENT,
+  `numero` VARCHAR(25) NOT NULL,
+  `tipo` VARCHAR(40) NOT NULL,
+  `idCliente` INT NOT NULL,
+  PRIMARY KEY (`idtelefonoClientes`),
+  INDEX `idx_cliente_telefono` (`idCliente`),
+  CONSTRAINT `FK_telefono_cliente`
+    FOREIGN KEY (`idCliente`)
+    REFERENCES `Cliente` (`idCliente`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Extra (
-  idExtra INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(40) NOT NULL,
-  descrip VARCHAR(50) NOT NULL,
-  precioPersona DECIMAL(10,2) NOT NULL
-);
+-- Tabla: Viaje
+CREATE TABLE IF NOT EXISTS `Viaje` (
+  `idViaje` INT NOT NULL AUTO_INCREMENT,
+  `tipoViaje` VARCHAR(15) NOT NULL,
+  PRIMARY KEY (`idViaje`)
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS detalleExtra (
-  idDetalleExtra INT AUTO_INCREMENT PRIMARY KEY,
-  cantPersona INT NOT NULL,
-  precio DECIMAL(10,2) GENERATED ALWAYS AS (cantPersona * 1.0) VIRTUAL, -- puedes ajustar esto si tienes acceso al precioPersona
-  idExtra INT NOT NULL,
-  FOREIGN KEY (idExtra) REFERENCES Extra(idExtra)
-);
+-- Tabla: Proveedor
+CREATE TABLE IF NOT EXISTS `Proveedor` (
+  `idProveedor` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(60) NOT NULL,
+  `descrip` VARCHAR(70) NOT NULL,
+  PRIMARY KEY (`idProveedor`)
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Proveedor (
-  idProveedor INT AUTO_INCREMENT PRIMARY KEY,
-  nombre VARCHAR(50) NOT NULL,
-  descrip VARCHAR(60) NOT NULL,
-  correo VARCHAR(70) NOT NULL
-);
+-- Tabla: detalleViaje
+CREATE TABLE IF NOT EXISTS `detalleViaje` (
+  `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
+  `fecha` DATE NOT NULL,
+  `hora` TIME NOT NULL,
+  `idProveedor` INT DEFAULT NULL,
+  `idViaje` INT NOT NULL,
+  PRIMARY KEY (`idDetalleViaje`),
+  INDEX `idx_proveedor` (`idProveedor`),
+  INDEX `idx_viaje` (`idViaje`),
+  CONSTRAINT `FK_detalle_viaje_viaje`
+    FOREIGN KEY (`idViaje`)
+    REFERENCES `Viaje` (`idViaje`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_detalle_viaje_proveedor`
+    FOREIGN KEY (`idProveedor`)
+    REFERENCES `Proveedor` (`idProveedor`)
+    ON DELETE SET NULL
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS telefonosProveedor (
-  idTelefonoProveedor INT AUTO_INCREMENT PRIMARY KEY,
-  telefono VARCHAR(20) NOT NULL,
-  idProveedor INT NOT NULL,
-  FOREIGN KEY (idProveedor) REFERENCES Proveedor(idProveedor)
-);
+-- Tabla: Reservas
+CREATE TABLE IF NOT EXISTS `reservas` (
+  `idreservas` INT NOT NULL AUTO_INCREMENT,
+  `idCliente` INT NOT NULL,
+  `idAdministrador` INT NOT NULL,
+  `idDetalle` INT NOT NULL,
+  PRIMARY KEY (`idreservas`),
+  INDEX `idx_reserva_cliente` (`idCliente`),
+  INDEX `idx_reserva_admin` (`idAdministrador`),
+  INDEX `idx_reserva_detalle` (`idDetalle`),
+  CONSTRAINT `FK_reserva_cliente`
+    FOREIGN KEY (`idCliente`)
+    REFERENCES `Cliente` (`idCliente`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_reserva_admin`
+    FOREIGN KEY (`idAdministrador`)
+    REFERENCES `Administrador` (`idAdministrador`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
+  CONSTRAINT `FK_reserva_detalle`
+    FOREIGN KEY (`idDetalle`)
+    REFERENCES `detalleViaje` (`idDetalleViaje`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Viaje (
-  idViaje INT AUTO_INCREMENT PRIMARY KEY,
-  tipo VARCHAR(30) NOT NULL,
-  descrip VARCHAR(60) NOT NULL,
-  origen VARCHAR(40) NOT NULL,
-  destino VARCHAR(40) NOT NULL
-);
+-- Tabla: Pasajeros
+CREATE TABLE IF NOT EXISTS `Pasajeros` (
+  `idPasajeros` INT NOT NULL AUTO_INCREMENT,
+  `nombre` VARCHAR(60) NOT NULL,
+  `edad` INT NOT NULL,
+  `idDetalle` INT NOT NULL,
+  PRIMARY KEY (`idPasajeros`),
+  INDEX `idx_pasajero_detalle` (`idDetalle`),
+  CONSTRAINT `FK_pasajero_detalle`
+    FOREIGN KEY (`idDetalle`)
+    REFERENCES `detalleViaje` (`idDetalleViaje`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS DetalleViaje (
-  idDetalleViaje INT AUTO_INCREMENT PRIMARY KEY,
-  numPasajeros VARCHAR(4) NOT NULL,
-  precio DECIMAL(10,2) NOT NULL,
-  idViaje INT NOT NULL,
-  idProveedor INT NOT NULL,
-  FOREIGN KEY (idViaje) REFERENCES Viaje(idViaje),
-  FOREIGN KEY (idProveedor) REFERENCES Proveedor(idProveedor)
-);
-
-CREATE TABLE IF NOT EXISTS Reserva (
-  idReserva INT AUTO_INCREMENT PRIMARY KEY,
-  fecha DATE NOT NULL,
-  hora TIME NOT NULL,
-  descrip VARCHAR(60) NOT NULL,
-  subtotalViaje DECIMAL(10,2) GENERATED ALWAYS AS (0) VIRTUAL, -- reemplazar por expresión real
-  subtotalExtra DECIMAL(10,2) GENERATED ALWAYS AS (0) VIRTUAL, -- reemplazar por expresión real
-  total DECIMAL(10,2) GENERATED ALWAYS AS (subtotalViaje + subtotalExtra) VIRTUAL,
-  idExtra INT DEFAULT NULL,
-  idViaje INT NOT NULL,
-  idUsuario INT NOT NULL,
-  FOREIGN KEY (idExtra) REFERENCES detalleExtra(idDetalleExtra),
-  FOREIGN KEY (idViaje) REFERENCES DetalleViaje(idDetalleViaje),
-  FOREIGN KEY (idUsuario) REFERENCES Usuario(idUsuario)
-);
-
+-- Restaurar configuración original
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

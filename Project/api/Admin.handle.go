@@ -18,10 +18,7 @@ func (server *Server) GetAllAdmins(ctx *gin.Context) {
 }
 
 type createAdminRequest struct {
-	Name     string `json:"name" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	User     string `json:"user" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Name string `json:"name" binding:"required"`
 }
 
 func (server *Server) CreateAdmin(ctx *gin.Context) {
@@ -30,18 +27,14 @@ func (server *Server) CreateAdmin(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	args := dto.CreateAdminParams{
-		Nombre:     req.Name,
-		Correo:     req.Email,
-		Usuario:    req.User,
-		Contraseña: req.Password,
-	}
-	admin, err := server.dbtx.CreateAdmin(ctx, args)
+	params := req.Name
+	result, err := server.dbtx.CreateAdmin(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, admin)
+	var lastId, _ = result.LastInsertId()
+	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
 
 type getAdminByIDRequest struct {
@@ -93,9 +86,7 @@ type updateAdminRequest struct {
 }
 
 type updateAdminBodyRequest struct {
-	Name  string `json:"name" binding:"required,min=1"`
-	Email string `json:"email" binding:"required,email"`
-	User  string `json:"user" binding:"required,alphanum"`
+	Name string `json:"name" binding:"required,min=1"`
 }
 
 func (server *Server) UpdateAdmin(ctx *gin.Context) {
@@ -111,47 +102,14 @@ func (server *Server) UpdateAdmin(ctx *gin.Context) {
 	}
 	params := dto.UpdateAdminParams{
 		Nombre:          bodyReq.Name,
-		Correo:          bodyReq.Email,
-		Usuario:         bodyReq.User,
 		Idadministrador: req.ID,
 	}
-	success, err := server.dbtx.UpdateAdmin(ctx, params)
+	_, err := server.dbtx.UpdateAdmin(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, success)
-}
-
-type updateAdminPasswordParam struct {
-	Password string `json:"password" binding:"required"`
-}
-
-type updateAdminPasswordURI struct {
-	ID int32 `uri:"id" binding:"required,min=1"`
-}
-
-func (server *Server) UpdateAdminPassword(ctx *gin.Context) {
-	var uri updateAdminPasswordURI
-	if err := ctx.ShouldBindUri(&uri); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	var pswrdReq updateAdminPasswordParam
-	if err := ctx.ShouldBindJSON(&pswrdReq); err != nil {
-		ctx.JSON(http.StatusBadRequest, errorResponse(err))
-		return
-	}
-	param := dto.UpdateAdminPasswordParams{
-		Contraseña:      pswrdReq.Password,
-		Idadministrador: uri.ID,
-	}
-	success, err := server.dbtx.UpdateAdminPassword(ctx, param)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
-	ctx.JSON(http.StatusOK, success)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador modificado con éxito"})
 }
 
 type deleteAdminRequest struct {
@@ -164,7 +122,7 @@ func (server *Server) DeleteAdmin(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	success, err := server.dbtx.DeleteAdmin(ctx, req.ID)
+	_, err := server.dbtx.DeleteAdmin(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -173,7 +131,7 @@ func (server *Server) DeleteAdmin(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, success)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador eliminado con éxito"})
 }
 
 type deleteAdminByNameRequest struct {
@@ -186,10 +144,10 @@ func (server *Server) DeleteAdminByName(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	success, err := server.dbtx.DeleteAdminByName(ctx, req.Name)
+	_, err := server.dbtx.DeleteAdminByName(ctx, req.Name)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, success)
+	ctx.JSON(http.StatusOK, gin.H{"message": "Administrador eliminado con éxito"})
 }
