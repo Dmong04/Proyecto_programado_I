@@ -42,7 +42,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	adminRoutes := router.Group("/")
 	clientRoutes := router.Group("/")
 	sharedRoutes := router.Group("/")
-	router.POST("api/v1/Client", server.CreateClient)
 	sharedRoutes.Use(auth, roleMiddleware("Admin", "Client"))
 	{
 		// Rutas de consulta de clientes
