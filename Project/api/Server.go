@@ -65,6 +65,13 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
+		// Gestion de viaje
+		sharedRoutes.GET("api/v1/Travel/all", server.GetAllTravels)
+		sharedRoutes.GET("api/v1/Travel/:id", server.GetTravelById)
+		// Gestion de proveedor
+		sharedRoutes.GET("api/v1/Provider/all", server.GetAllProviders)
+		sharedRoutes.GET("api/v1/Provider/:id", server.GetProviderByID)
+		sharedRoutes.GET("api/v1/Provider/name/:name", server.GetProviderByName)
 		// Gestión de usuario
 		sharedRoutes.PATCH("api/v1/User/update/:id", server.updateUser) // (Funciona)
 		sharedRoutes.PATCH("api/v1/User/password/:id", server.updatePassword)
@@ -83,18 +90,13 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		adminRoutes.DELETE("api/v1/Admin/delete/:id", server.DeleteAdmin)
 		adminRoutes.DELETE("api/v1/Admin/delete/name/:name", server.DeleteAdminByName)
 		//CRUD Proveedor (Funciona)
-		adminRoutes.GET("api/v1/Provider/all", server.GetAllProviders)
 		adminRoutes.POST("api/v1/Provider", server.CreateProvider)
-		adminRoutes.GET("api/v1/Provider/:id", server.GetProviderByID)
-		adminRoutes.GET("api/v1/Provider/name/:name", server.GetProviderByName)
 		adminRoutes.PATCH("api/v1/Provider/update/:id", server.UpdateProvider)
 		adminRoutes.PATCH("api/v1/Provider/update/name/:name", server.UpdateProviderByName)
 		adminRoutes.DELETE("api/v1/Provider/delete/:id", server.DeleteProvider)
 		adminRoutes.DELETE("api/v1/Provider/delete/name/:name", server.DeleteProviderByName)
 		// CRUD Travel (Funciona)
 		adminRoutes.POST("api/v1/Travel", server.CreateTravel)
-		adminRoutes.GET("api/v1/Travel/all", server.GetAllTravels)
-		adminRoutes.GET("api/v1/Travel/:id", server.GetTravelById)
 		adminRoutes.DELETE("api/v1/Travel/delete/:id", server.DeleteTravel)
 		adminRoutes.PATCH("api/v1/Travel/update/:id", server.UpdateTravel)
 		// GESTION USUARIO
