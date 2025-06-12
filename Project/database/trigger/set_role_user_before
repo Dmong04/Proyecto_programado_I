@@ -1,4 +1,4 @@
-//Se inserta manualmente en la base de datos
+//Se inserta manualmente en la base de datos para el ingreso de usuarios 
 CREATE TRIGGER `set_role_usuario_before` BEFORE INSERT ON `usuario`
  FOR EACH ROW BEGIN
   IF NEW.idCliente IS NOT NULL AND NEW.idAdministrador IS NULL THEN
