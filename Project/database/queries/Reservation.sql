@@ -5,12 +5,12 @@ SELECT * FROM reservas;
 SELECT * FROM reservas WHERE idreservas = ? LIMIT 1;
 
 -- name: CreateReservation :execresult
-INSERT INTO reservas (idCliente, idAdministrador, idDetalle, fecha, hora)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO reservas (idCliente, idAdministrador, idDetalle)
+VALUES (?, ?, ?, ?,);
 
 -- name: UpdateReservation :exec
 UPDATE reservas
-SET idCliente = ?, idAdministrador = ?, idDetalle = ?, fecha = ?, hora = ?
+SET idCliente = ?, idAdministrador = ?, idDetalle = ?
 WHERE idreservas = ?;
 
 -- name: DeleteReservation :exec
