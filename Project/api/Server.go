@@ -110,7 +110,6 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	server.router = router
 	return server, nil
 }
-
 func (server *Server) Start(url string) error {
 	return server.router.Run(url)
 }
