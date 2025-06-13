@@ -21,6 +21,7 @@ type loginUserResponse struct {
 }
 
 type userResponse struct {
+	ID         int32     `json:"id"`
 	Email      string    `json:"email"`
 	User       string    `json:"user"`
 	Created_at time.Time `json:"created_at"`
@@ -58,8 +59,11 @@ func (server *Server) login(ctx *gin.Context) {
 	response := loginUserResponse{
 		AccessToken: accessToken,
 		LoggedUser: userResponse{
-			User:  user.User,
-			Email: user.Email,
+			ID:         user.ID,
+			User:       user.User,
+			Email:      user.Email,
+			Created_at: user.CreatedAt.Time,
+			Updated_at: user.UpdatedAt.Time,
 		},
 		Role: user.Role,
 	}
