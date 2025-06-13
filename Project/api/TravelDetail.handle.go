@@ -93,7 +93,8 @@ func (server *Server) CreateDetail(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, detail)
+	var lastId, _ = detail.LastInsertId()
+	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
 
 type updateDetailrequest struct {
