@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `Administrador` (
 CREATE TABLE IF NOT EXISTS `Cliente` (
   `idCliente` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
+  `telefono` VARCHAR(12) DEFAULT NULL,
   PRIMARY KEY (`idCliente`)
 ) ENGINE=InnoDB;
 
@@ -46,25 +47,10 @@ CREATE TABLE IF NOT EXISTS `Usuario` (
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
--- Tabla: telefonoClientes
-CREATE TABLE IF NOT EXISTS `telefonoClientes` (
-  `idtelefonoClientes` INT NOT NULL AUTO_INCREMENT,
-  `numero` VARCHAR(25) NOT NULL,
-  `tipo` VARCHAR(40) NOT NULL,
-  `idCliente` INT NOT NULL,
-  PRIMARY KEY (`idtelefonoClientes`),
-  INDEX `idx_cliente_telefono` (`idCliente`),
-  CONSTRAINT `FK_telefono_cliente`
-    FOREIGN KEY (`idCliente`)
-    REFERENCES `Cliente` (`idCliente`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
 -- Tabla: Viaje
 CREATE TABLE IF NOT EXISTS `Viaje` (
   `idViaje` INT NOT NULL AUTO_INCREMENT,
-  `tipoViaje` VARCHAR(15) NOT NULL,
+  `tipoViaje` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`idViaje`)
 ) ENGINE=InnoDB;
 
@@ -81,6 +67,7 @@ CREATE TABLE IF NOT EXISTS `detalleViaje` (
   `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
   `fecha` DATE NOT NULL,
   `hora` TIME NOT NULL,
+  `numPasajeros` INT NOT NULL,
   `idProveedor` INT DEFAULT NULL,
   `idViaje` INT NOT NULL,
   PRIMARY KEY (`idDetalleViaje`),
@@ -119,21 +106,6 @@ CREATE TABLE IF NOT EXISTS `reservas` (
     ON DELETE CASCADE
     ON UPDATE CASCADE,
   CONSTRAINT `FK_reserva_detalle`
-    FOREIGN KEY (`idDetalle`)
-    REFERENCES `detalleViaje` (`idDetalleViaje`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
--- Tabla: Pasajeros
-CREATE TABLE IF NOT EXISTS `Pasajeros` (
-  `idPasajeros` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(60) NOT NULL,
-  `edad` INT NOT NULL,
-  `idDetalle` INT NOT NULL,
-  PRIMARY KEY (`idPasajeros`),
-  INDEX `idx_pasajero_detalle` (`idDetalle`),
-  CONSTRAINT `FK_pasajero_detalle`
     FOREIGN KEY (`idDetalle`)
     REFERENCES `detalleViaje` (`idDetalleViaje`)
     ON DELETE CASCADE
