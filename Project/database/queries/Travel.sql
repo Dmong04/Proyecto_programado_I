@@ -5,12 +5,12 @@ SELECT * FROM Viaje;
 SELECT * FROM Viaje WHERE idViaje = ? LIMIT 1;
 
 -- name: CreateTravel :execresult
-INSERT INTO Viaje (tipoViaje)
-VALUES (?);
+INSERT INTO Viaje (tipoViaje, descripcion)
+VALUES (?, ?);
 
 -- name: UpdateTravel :exec
 UPDATE Viaje
-SET tipoViaje = ?
+SET tipoViaje = ?, descripcion = ?
 WHERE idViaje = ?;
 
 -- name: DeleteTravel :exec
