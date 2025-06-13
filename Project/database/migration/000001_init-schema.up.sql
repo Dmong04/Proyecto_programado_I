@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `telefonoClientes` (
 CREATE TABLE IF NOT EXISTS `Viaje` (
   `idViaje` INT NOT NULL AUTO_INCREMENT,
   `tipoViaje` VARCHAR(15) NOT NULL,
+  `descripcion` TEXT NOT NULL,
   PRIMARY KEY (`idViaje`)
 ) ENGINE=InnoDB;
 
