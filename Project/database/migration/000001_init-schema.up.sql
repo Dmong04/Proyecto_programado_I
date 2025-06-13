@@ -18,7 +18,6 @@ CREATE TABLE IF NOT EXISTS `Administrador` (
 CREATE TABLE IF NOT EXISTS `Cliente` (
   `idCliente` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
-  `telefono` VARCHAR(12) DEFAULT NULL,
   PRIMARY KEY (`idCliente`)
 ) ENGINE=InnoDB;
 
@@ -50,7 +49,7 @@ CREATE TABLE IF NOT EXISTS `Usuario` (
 -- Tabla: Viaje
 CREATE TABLE IF NOT EXISTS `Viaje` (
   `idViaje` INT NOT NULL AUTO_INCREMENT,
-  `tipoViaje` VARCHAR(20) NOT NULL,
+  `tipoViaje` VARCHAR(15) NOT NULL,
   PRIMARY KEY (`idViaje`)
 ) ENGINE=InnoDB;
 
@@ -67,7 +66,6 @@ CREATE TABLE IF NOT EXISTS `detalleViaje` (
   `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
   `fecha` DATE NOT NULL,
   `hora` TIME NOT NULL,
-  `numPasajeros` INT NOT NULL,
   `idProveedor` INT DEFAULT NULL,
   `idViaje` INT NOT NULL,
   PRIMARY KEY (`idDetalleViaje`),
