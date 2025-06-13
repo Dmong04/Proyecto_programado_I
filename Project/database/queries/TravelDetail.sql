@@ -15,3 +15,4 @@ WHERE idDetalleViaje = ?;
 
 -- name: DeleteTravelDetail :exec
 DELETE FROM detalleViaje WHERE idDetalleViaje = ?;
+

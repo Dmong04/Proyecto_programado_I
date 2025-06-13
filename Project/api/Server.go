@@ -48,20 +48,12 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		sharedRoutes.DELETE("api/v1/Client/delete/:id", server.DeleteClient)
 		sharedRoutes.GET("api/v1/Client/name/:name", server.GetClientByName)
 		sharedRoutes.GET("api/v1/Client/id/:id", server.GetClientByID)
-		// Rutas de consulta a teléfonos de clientes
-		sharedRoutes.GET("api/v1/Client/Phones/:id", server.GetClientPhonesById)
-		sharedRoutes.GET("api/v1/Client/Phones/client/:idclient", server.GetClientPhonesByClientID)
-		sharedRoutes.GET("api/v1/Client/Phones/all", server.GetAllClientPhones)
 		// Rutas de gestión de reservas
 		sharedRoutes.GET("api/v1/Reservations/all", server.GetAllReservations)
 		sharedRoutes.GET("api/v1/Reservations/:id", server.GetReservationsById)
 		sharedRoutes.PATCH("api/v1/Reservations/update/:id", server.UpdateReservations)
 		sharedRoutes.DELETE("api/v1/Reservations/delete/:id", server.DeleteReservation)
-		// Rutas de gestión de pasajeros
-		sharedRoutes.GET("api/v1/Passengers/all", server.GetAllPassengers)
-		sharedRoutes.GET("api/v1/Passengers/:id", server.GetPassengersById)
-		sharedRoutes.GET("api/v1/Passengers/detail/:detail_id", server.GetPassengersByDetailID)
-		sharedRoutes.GET("api/v1/Passengers/name/:name", server.GetPassengersByName)
+		sharedRoutes.POST("api/v1/Reservations", server.CreateReservation)
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
@@ -109,20 +101,10 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// CRUD Client (Funciona)
 		clientRoutes.PATCH("api/v1/Client/update/:id", server.UpdateClient)
 		clientRoutes.DELETE("api/v1/Client/delete/name/:name", server.DeleteClientByName)
-		// CRUD Pasajeros (Funciona)
-		clientRoutes.POST("api/v1/Passengers", server.CreatePassenger)
-		clientRoutes.PATCH("api/v1/Passengers/update/:id", server.UpdatePassengers)
-		clientRoutes.DELETE("api/v1/Passengers/delete/:id", server.DeletePassenger)
 		// CRUD DetalleViajes (Funciona)
 		clientRoutes.POST("api/v1/Details", server.CreateDetail)
 		clientRoutes.PATCH("api/v1/Details/update/:id", server.UpdateDetail)
 		clientRoutes.DELETE("api/v1/Details/delete/:id", server.DeleteDetail)
-		// CRUD ClientPhones (Funciona)
-		clientRoutes.POST("api/v1/Client/Phones", server.CreateClientPhones)
-		clientRoutes.PATCH("api/v1/Client/Phones/update/:id", server.UpdateClientPhones)
-		clientRoutes.DELETE("api/v1/Client/Phones/delete/:id", server.DeleteClientPhones)
-		// CRUD Reservaciones (Funciona)
-		clientRoutes.POST("api/v1/Reservations", server.CreateReservation)
 	}
 	// Rutas (Endpoints) De la API
 	server.router = router
