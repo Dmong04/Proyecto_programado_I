@@ -39,15 +39,20 @@ const getAllClients = `-- name: GetAllClients :many
 SELECT idCliente, nombre FROM Cliente
 `
 
-func (q *Queries) GetAllClients(ctx context.Context) ([]Cliente, error) {
+type GetAllClientsRow struct {
+	Idcliente int32  `json:"idcliente"`
+	Nombre    string `json:"nombre"`
+}
+
+func (q *Queries) GetAllClients(ctx context.Context) ([]GetAllClientsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAllClients)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Cliente
+	var items []GetAllClientsRow
 	for rows.Next() {
-		var i Cliente
+		var i GetAllClientsRow
 		if err := rows.Scan(&i.Idcliente, &i.Nombre); err != nil {
 			return nil, err
 		}
@@ -67,9 +72,14 @@ SELECT idCliente, nombre
 FROM Cliente WHERE idCliente = ? LIMIT 1
 `
 
-func (q *Queries) GetClientById(ctx context.Context, idcliente int32) (Cliente, error) {
+type GetClientByIdRow struct {
+	Idcliente int32  `json:"idcliente"`
+	Nombre    string `json:"nombre"`
+}
+
+func (q *Queries) GetClientById(ctx context.Context, idcliente int32) (GetClientByIdRow, error) {
 	row := q.db.QueryRowContext(ctx, getClientById, idcliente)
-	var i Cliente
+	var i GetClientByIdRow
 	err := row.Scan(&i.Idcliente, &i.Nombre)
 	return i, err
 }
@@ -79,9 +89,14 @@ SELECT idCliente, nombre
 FROM Cliente WHERE nombre = ? LIMIT 1
 `
 
-func (q *Queries) GetClientByName(ctx context.Context, nombre string) (Cliente, error) {
+type GetClientByNameRow struct {
+	Idcliente int32  `json:"idcliente"`
+	Nombre    string `json:"nombre"`
+}
+
+func (q *Queries) GetClientByName(ctx context.Context, nombre string) (GetClientByNameRow, error) {
 	row := q.db.QueryRowContext(ctx, getClientByName, nombre)
-	var i Cliente
+	var i GetClientByNameRow
 	err := row.Scan(&i.Idcliente, &i.Nombre)
 	return i, err
 }

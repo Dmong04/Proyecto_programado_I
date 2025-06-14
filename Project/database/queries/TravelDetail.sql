@@ -5,12 +5,12 @@ SELECT * FROM detalleViaje;
 SELECT * FROM detalleViaje WHERE idDetalleViaje = ? LIMIT 1;
 
 -- name: CreateTravelDetail :execresult
-INSERT INTO detalleViaje (idProveedor, idViaje)
-VALUES (?, ?);
+INSERT INTO detalleViaje (idProveedor, idViaje, fecha, hora)
+VALUES (?, ?, ?, ?);
 
 -- name: UpdateTravelDetail :exec
 UPDATE detalleViaje
-SET idProveedor = ?, idViaje = ?
+SET idProveedor = ?, idViaje = ?, fecha = ?, hora = ?
 WHERE idDetalleViaje = ?;
 
 -- name: DeleteTravelDetail :exec

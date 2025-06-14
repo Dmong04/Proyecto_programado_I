@@ -11,18 +11,18 @@ import (
 )
 
 const createReservation = `-- name: CreateReservation :execresult
-INSERT INTO reservas (idCliente, idAdministrador, idDetalle)
+INSERT INTO reservas (idUsuario, idDetalle, estado)
 VALUES (?, ?, ?)
 `
 
 type CreateReservationParams struct {
-	Idcliente       int32 `json:"idcliente"`
-	Idadministrador int32 `json:"idadministrador"`
-	Iddetalle       int32 `json:"iddetalle"`
+	Idusuario int32  `json:"idusuario"`
+	Iddetalle int32  `json:"iddetalle"`
+	Estado    string `json:"estado"`
 }
 
 func (q *Queries) CreateReservation(ctx context.Context, arg CreateReservationParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createReservation, arg.Idcliente, arg.Idadministrador, arg.Iddetalle)
+	return q.db.ExecContext(ctx, createReservation, arg.Idusuario, arg.Iddetalle, arg.Estado)
 }
 
 const deleteReservation = `-- name: DeleteReservation :exec
@@ -35,7 +35,7 @@ func (q *Queries) DeleteReservation(ctx context.Context, idreservas int32) error
 }
 
 const getAllReservations = `-- name: GetAllReservations :many
-SELECT idreservas, idcliente, idadministrador, iddetalle FROM reservas
+SELECT idreservas, idusuario, iddetalle, estado FROM reservas
 `
 
 func (q *Queries) GetAllReservations(ctx context.Context) ([]Reserva, error) {
@@ -49,9 +49,9 @@ func (q *Queries) GetAllReservations(ctx context.Context) ([]Reserva, error) {
 		var i Reserva
 		if err := rows.Scan(
 			&i.Idreservas,
-			&i.Idcliente,
-			&i.Idadministrador,
+			&i.Idusuario,
 			&i.Iddetalle,
+			&i.Estado,
 		); err != nil {
 			return nil, err
 		}
@@ -67,7 +67,7 @@ func (q *Queries) GetAllReservations(ctx context.Context) ([]Reserva, error) {
 }
 
 const getReservationsById = `-- name: GetReservationsById :one
-SELECT idreservas, idcliente, idadministrador, iddetalle FROM reservas WHERE idreservas = ? LIMIT 1
+SELECT idreservas, idusuario, iddetalle, estado FROM reservas WHERE idreservas = ? LIMIT 1
 `
 
 func (q *Queries) GetReservationsById(ctx context.Context, idreservas int32) (Reserva, error) {
@@ -75,32 +75,42 @@ func (q *Queries) GetReservationsById(ctx context.Context, idreservas int32) (Re
 	var i Reserva
 	err := row.Scan(
 		&i.Idreservas,
-		&i.Idcliente,
-		&i.Idadministrador,
+		&i.Idusuario,
 		&i.Iddetalle,
+		&i.Estado,
 	)
 	return i, err
 }
 
 const updateReservation = `-- name: UpdateReservation :exec
 UPDATE reservas
-SET idCliente = ?, idAdministrador = ?, idDetalle = ?
+SET idUsuario = ?, idDetalle = ?
 WHERE idreservas = ?
 `
 
 type UpdateReservationParams struct {
-	Idcliente       int32 `json:"idcliente"`
-	Idadministrador int32 `json:"idadministrador"`
-	Iddetalle       int32 `json:"iddetalle"`
-	Idreservas      int32 `json:"idreservas"`
+	Idusuario  int32 `json:"idusuario"`
+	Iddetalle  int32 `json:"iddetalle"`
+	Idreservas int32 `json:"idreservas"`
 }
 
 func (q *Queries) UpdateReservation(ctx context.Context, arg UpdateReservationParams) error {
-	_, err := q.db.ExecContext(ctx, updateReservation,
-		arg.Idcliente,
-		arg.Idadministrador,
-		arg.Iddetalle,
-		arg.Idreservas,
-	)
+	_, err := q.db.ExecContext(ctx, updateReservation, arg.Idusuario, arg.Iddetalle, arg.Idreservas)
+	return err
+}
+
+const updateStatus = `-- name: UpdateStatus :exec
+UPDATE reservas
+SET estado = ?
+WHERE idreservas = ?
+`
+
+type UpdateStatusParams struct {
+	Estado     string `json:"estado"`
+	Idreservas int32  `json:"idreservas"`
+}
+
+func (q *Queries) UpdateStatus(ctx context.Context, arg UpdateStatusParams) error {
+	_, err := q.db.ExecContext(ctx, updateStatus, arg.Estado, arg.Idreservas)
 	return err
 }

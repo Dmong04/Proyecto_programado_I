@@ -12,23 +12,23 @@ import (
 )
 
 const createTravelDetail = `-- name: CreateTravelDetail :execresult
-INSERT INTO detalleViaje (fecha, hora, idProveedor, idViaje)
+INSERT INTO detalleViaje (idProveedor, idViaje, fecha, hora)
 VALUES (?, ?, ?, ?)
 `
 
 type CreateTravelDetailParams struct {
-	Fecha       time.Time     `json:"fecha"`
-	Hora        time.Time     `json:"hora"`
 	Idproveedor sql.NullInt32 `json:"idproveedor"`
 	Idviaje     int32         `json:"idviaje"`
+	Fecha       time.Time     `json:"fecha"`
+	Hora        time.Time     `json:"hora"`
 }
 
 func (q *Queries) CreateTravelDetail(ctx context.Context, arg CreateTravelDetailParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, createTravelDetail,
-		arg.Fecha,
-		arg.Hora,
 		arg.Idproveedor,
 		arg.Idviaje,
+		arg.Fecha,
+		arg.Hora,
 	)
 }
 
@@ -93,24 +93,24 @@ func (q *Queries) GetTravelDetailById(ctx context.Context, iddetalleviaje int32)
 
 const updateTravelDetail = `-- name: UpdateTravelDetail :exec
 UPDATE detalleViaje
-SET fecha = ?, hora = ?, idProveedor = ?, idViaje = ?
+SET idProveedor = ?, idViaje = ?, fecha = ?, hora = ?
 WHERE idDetalleViaje = ?
 `
 
 type UpdateTravelDetailParams struct {
-	Fecha          time.Time     `json:"fecha"`
-	Hora           time.Time     `json:"hora"`
 	Idproveedor    sql.NullInt32 `json:"idproveedor"`
 	Idviaje        int32         `json:"idviaje"`
+	Fecha          time.Time     `json:"fecha"`
+	Hora           time.Time     `json:"hora"`
 	Iddetalleviaje int32         `json:"iddetalleviaje"`
 }
 
 func (q *Queries) UpdateTravelDetail(ctx context.Context, arg UpdateTravelDetailParams) error {
 	_, err := q.db.ExecContext(ctx, updateTravelDetail,
-		arg.Fecha,
-		arg.Hora,
 		arg.Idproveedor,
 		arg.Idviaje,
+		arg.Fecha,
+		arg.Hora,
 		arg.Iddetalleviaje,
 	)
 	return err
