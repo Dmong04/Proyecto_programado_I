@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS `Administrador` (
 CREATE TABLE IF NOT EXISTS `Cliente` (
   `idCliente` INT NOT NULL AUTO_INCREMENT,
   `nombre` VARCHAR(60) NOT NULL,
-  `telefono` INT (12) NOT NULL,
+  `telefono` VARCHAR (20) NOT NULL,
   PRIMARY KEY (`idCliente`)
 ) ENGINE=InnoDB;
 

@@ -90,7 +90,7 @@ type updateClientURI struct {
 }
 type updateClientBody struct {
 	Nombre   string `json:"nombre" binding:"required"`
-	Telefono int32  `json:"telefono" binding:"required"`
+	Telefono string `json:"telefono" binding:"required"`
 }
 
 func (server *Server) UpdateClient(ctx *gin.Context) {
@@ -109,8 +109,7 @@ func (server *Server) UpdateClient(ctx *gin.Context) {
 		Telefono:  body.Telefono,
 		Idcliente: uri.ID,
 	}
-	res, err := server.dbtx.UpdateClient(ctx, params)
-	if err != nil {
+	if _, err := server.dbtx.UpdateClient(ctx, params); err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}

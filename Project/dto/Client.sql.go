@@ -17,7 +17,7 @@ VALUES (?,?)
 
 type CreateClientParams struct {
 	Nombre   string `json:"nombre"`
-	Telefono int32  `json:"telefono"`
+	Telefono string `json:"telefono"`
 }
 
 func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (sql.Result, error) {
@@ -99,7 +99,7 @@ WHERE idCliente = ?
 
 type UpdateClientParams struct {
 	Nombre    string `json:"nombre"`
-	Telefono  int32  `json:"telefono"`
+	Telefono  string `json:"telefono"`
 	Idcliente int32  `json:"idcliente"`
 }
 
