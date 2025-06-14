@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// GET /clients
 func (server *Server) GetAllClients(ctx *gin.Context) {
 	clients, err := server.dbtx.GetAllClients(ctx)
 	if err != nil {
@@ -17,26 +18,27 @@ func (server *Server) GetAllClients(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, clients)
 }
 
-type CreateClientRequest struct {
-	Nombre string `json:"name"`
-}
-
+// POST /clients
 func (server *Server) CreateClient(ctx *gin.Context) {
-	var req CreateClientRequest
+	var req dto.CreateClientParams
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	args := req.Nombre
-	result, err := server.dbtx.CreateClient(ctx, args)
+	result, err := server.dbtx.CreateClient(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	var lastId, _ = result.LastInsertId()
+	lastId, err := result.LastInsertId()
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
 	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
 
+// GET /clients/:id
 type getClientByIDRequest struct {
 	ID int32 `uri:"id" binding:"required,min=1"`
 }
@@ -50,7 +52,7 @@ func (server *Server) GetClientByID(ctx *gin.Context) {
 	client, err := server.dbtx.GetClientById(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Cliente no encontrado"})
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -59,8 +61,9 @@ func (server *Server) GetClientByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, client)
 }
 
+// GET /clients/name/:name
 type getClientByNameRequest struct {
-	Nombre string `uri:"name" binding:"required,min=1"`
+	Nombre string `uri:"name" binding:"required"`
 }
 
 func (server *Server) GetClientByName(ctx *gin.Context) {
@@ -72,7 +75,7 @@ func (server *Server) GetClientByName(ctx *gin.Context) {
 	client, err := server.dbtx.GetClientByName(ctx, req.Nombre)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Cliente no encontrado"})
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
@@ -81,36 +84,39 @@ func (server *Server) GetClientByName(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, client)
 }
 
-type updateClientRequest struct {
+// PUT /clients/:id
+type updateClientURI struct {
 	ID int32 `uri:"id" binding:"required"`
 }
 type updateClientBody struct {
-	Name string `json:"name" binding:"required,min=1"`
+	Nombre   string `json:"nombre" binding:"required"`
+	Telefono int32  `json:"telefono" binding:"required"`
 }
 
 func (server *Server) UpdateClient(ctx *gin.Context) {
-	var req updateClientRequest
-	if err := ctx.ShouldBindUri(&req); err != nil {
+	var uri updateClientURI
+	if err := ctx.ShouldBindUri(&uri); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	var bodyReq updateClientBody
-	if err := ctx.ShouldBindJSON(&bodyReq); err != nil {
+	var body updateClientBody
+	if err := ctx.ShouldBindJSON(&body); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
 	params := dto.UpdateClientParams{
-		Nombre:    bodyReq.Name,
-		Idcliente: req.ID,
+		Nombre:    body.Nombre,
+		Telefono:  body.Telefono,
+		Idcliente: uri.ID,
 	}
-	_, err := server.dbtx.UpdateClient(ctx, params)
-	if err != nil {
+	if err := server.dbtx.UpdateClient(ctx, params); err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente se modificado con éxito"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente actualizado con éxito"})
 }
 
+// DELETE /clients (body: { "id": 1 })
 type deleteClientRequest struct {
 	ID int32 `json:"id" binding:"required"`
 }
@@ -124,15 +130,16 @@ func (server *Server) DeleteClient(ctx *gin.Context) {
 	_, err := server.dbtx.DeleteClient(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			ctx.JSON(http.StatusNotFound, errorResponse(err))
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Cliente no encontrado"})
 			return
 		}
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente fue eliminado con éxito"})
+	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente eliminado con éxito"})
 }
 
+// DELETE /clients/name/:name
 type deleteClientByNameRequest struct {
 	Name string `uri:"name" binding:"required"`
 }

@@ -37,7 +37,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	auth := authMiddleware(tokenBuilder)
 	router.POST("api/v1/login", server.login)
 	router.POST("api/v1/User", server.createUser)
-	router.POST("api/v1/Client", server.CreateClient)
+	router.POST("api/v1/Client", server.CreateClient) //(funciona la v2)
 	// Rutas (Endpoints) De la API
 	adminRoutes := router.Group("/")
 	clientRoutes := router.Group("/")
@@ -45,6 +45,7 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	sharedRoutes.Use(auth, roleMiddleware("Admin", "Client"))
 	{
 		// Rutas de consulta de clientes
+		sharedRoutes.PATCH("api/v1/Client/update/:id", server.UpdateClient)
 		sharedRoutes.DELETE("api/v1/Client/delete/:id", server.DeleteClient)
 		sharedRoutes.GET("api/v1/Client/name/:name", server.GetClientByName)
 		sharedRoutes.GET("api/v1/Client/id/:id", server.GetClientByID)
@@ -57,6 +58,9 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
+		sharedRoutes.POST("api/v1/Details", server.CreateDetail)
+		sharedRoutes.PATCH("api/v1/Details/update/:id", server.UpdateDetail)
+		sharedRoutes.DELETE("api/v1/Details/delete/:id", server.DeleteDetail)
 		// Gestion de viaje
 		sharedRoutes.GET("api/v1/Travel/all", server.GetAllTravels)
 		sharedRoutes.GET("api/v1/Travel/:id", server.GetTravelById)
@@ -101,12 +105,8 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 	clientRoutes.Use(auth, roleMiddleware("Client"))
 	{
 		// CRUD Client (Funciona)
-		clientRoutes.PATCH("api/v1/Client/update/:id", server.UpdateClient)
 		clientRoutes.DELETE("api/v1/Client/delete/name/:name", server.DeleteClientByName)
 		// CRUD DetalleViajes (Funciona)
-		clientRoutes.POST("api/v1/Details", server.CreateDetail)
-		clientRoutes.PATCH("api/v1/Details/update/:id", server.UpdateDetail)
-		clientRoutes.DELETE("api/v1/Details/delete/:id", server.DeleteDetail)
 	}
 	// Rutas (Endpoints) De la API
 	server.router = router
