@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `Usuario` (
   `usuario` VARCHAR(40) NOT NULL,
   `contraseña` VARCHAR(100) NOT NULL,
   `role` VARCHAR(20) NOT NULL,
+  `img`			varchar(255),
   `idAdministrador` INT DEFAULT NULL,
   `idCliente` INT DEFAULT NULL,
   `created_at`	datetime DEFAULT NULL,

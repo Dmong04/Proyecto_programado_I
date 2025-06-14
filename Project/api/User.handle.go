@@ -2,16 +2,21 @@ package api
 
 import (
 	"database/sql"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"project/dto"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type createUserRequest struct {
 	User            string `json:"user" binding:"required"`
 	Email           string `json:"email" binding:"required"`
 	Password        string `json:"password" binding:"required"`
+	Img             string `json:"image"`
 	Idadministrador *int32 `json:"idadministrador"`
 	Idcliente       *int32 `json:"idcliente"`
 }
@@ -21,6 +26,11 @@ func (server *Server) createUser(ctx *gin.Context) {
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
+	}
+	img := sql.NullString{}
+	if req.Img != "" {
+		img.String = req.Img
+		img.Valid = true
 	}
 	idadmin := sql.NullInt32{}
 	if req.Idadministrador != nil {
@@ -36,6 +46,7 @@ func (server *Server) createUser(ctx *gin.Context) {
 		Usuario:         req.User,
 		Correo:          req.Email,
 		Contraseña:      req.Password,
+		Img:             img,
 		Idadministrador: idadmin,
 		Idcliente:       idclient,
 	}
@@ -47,7 +58,54 @@ func (server *Server) createUser(ctx *gin.Context) {
 	var lastId, _ = result.LastInsertId()
 	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
+func (server *Server) uploadUserImg(ctx *gin.Context) {
+	fileHeader, err := ctx.FormFile("file0")
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	file, err := fileHeader.Open()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	defer file.Close()
+	uploadDir := "utils/images-user-profile"
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	filename := uuid.New().String() + "_" + filepath.Base(fileHeader.Filename)
+	destinationFile, err := os.Create(filepath.Join(uploadDir, filename))
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	defer destinationFile.Close()
+	_, err = io.Copy(destinationFile, file)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"file_name": filename,
+		"message":   "Archivo cargado exitosamente",
+	})
+}
 
+type getUserImageRequest struct {
+	Name string `uri:"name" binding:"required"`
+}
+
+func (server *Server) getUserImg(ctx *gin.Context) {
+	var req getUserImageRequest
+	if err := ctx.ShouldBindUri(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+	fileUrl := "utils/images-user-profile/" + req.Name
+	ctx.File(fileUrl)
+}
 func (server *Server) getAllUsers(ctx *gin.Context) {
 	users, err := server.dbtx.GetAllUsers(ctx)
 	if err != nil {

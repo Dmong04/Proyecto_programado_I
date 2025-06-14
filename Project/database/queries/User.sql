@@ -2,21 +2,21 @@
 SELECT idUsuario, correo, usuario, role, idAdministrador, idCliente FROM Usuario;
 
 -- name: GetUserById :one
--- name: GetUserById :one
 SELECT 
   idUsuario AS id, 
   usuario AS user, 
   correo AS email, 
   contraseña AS password, 
   role,
+  img AS image,
   idCliente,
   idAdministrador
 FROM Usuario
 WHERE idUsuario = ? LIMIT 1;
 
 -- name: CreateUser :execresult
-INSERT INTO Usuario (correo, usuario, contraseña, idAdministrador, idCliente, created_at, updated_at)
-VALUES (?, ?, ?, ?, ?, now(), now());
+INSERT INTO Usuario (correo, usuario, contraseña, img, idAdministrador, idCliente, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, now(), now());
 
 -- name: UpdateUser :execresult
 UPDATE Usuario
@@ -30,6 +30,7 @@ SELECT
   correo AS email,
   contraseña AS password,
   role,
+  img AS image,
   created_at,
   updated_at
 FROM Usuario
