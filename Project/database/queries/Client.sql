@@ -15,8 +15,7 @@ VALUES (?,?);
 
 -- name: UpdateClient :execresult
 UPDATE Cliente
-SET nombre = ?
-SET telefono = ?
+SET nombre = ?, telefono = ?
 WHERE idCliente = ?;
 
 -- name: DeleteClient :execresult

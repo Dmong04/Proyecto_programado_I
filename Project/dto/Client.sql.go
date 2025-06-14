@@ -11,12 +11,17 @@ import (
 )
 
 const createClient = `-- name: CreateClient :execresult
-INSERT INTO Cliente (nombre)
-VALUES (?)
+INSERT INTO Cliente (nombre, telefono)
+VALUES (?,?)
 `
 
-func (q *Queries) CreateClient(ctx context.Context, nombre string) (sql.Result, error) {
-	return q.db.ExecContext(ctx, createClient, nombre)
+type CreateClientParams struct {
+	Nombre   string `json:"nombre"`
+	Telefono int32  `json:"telefono"`
+}
+
+func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, createClient, arg.Nombre, arg.Telefono)
 }
 
 const deleteClient = `-- name: DeleteClient :execresult
@@ -36,24 +41,19 @@ func (q *Queries) DeleteClientByName(ctx context.Context, nombre string) (sql.Re
 }
 
 const getAllClients = `-- name: GetAllClients :many
-SELECT idCliente, nombre FROM Cliente
+SELECT idCliente, nombre, telefono FROM Cliente
 `
 
-type GetAllClientsRow struct {
-	Idcliente int32  `json:"idcliente"`
-	Nombre    string `json:"nombre"`
-}
-
-func (q *Queries) GetAllClients(ctx context.Context) ([]GetAllClientsRow, error) {
+func (q *Queries) GetAllClients(ctx context.Context) ([]Cliente, error) {
 	rows, err := q.db.QueryContext(ctx, getAllClients)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []GetAllClientsRow
+	var items []Cliente
 	for rows.Next() {
-		var i GetAllClientsRow
-		if err := rows.Scan(&i.Idcliente, &i.Nombre); err != nil {
+		var i Cliente
+		if err := rows.Scan(&i.Idcliente, &i.Nombre, &i.Telefono); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -68,50 +68,42 @@ func (q *Queries) GetAllClients(ctx context.Context) ([]GetAllClientsRow, error)
 }
 
 const getClientById = `-- name: GetClientById :one
-SELECT idCliente, nombre
+SELECT idCliente, nombre, telefono
 FROM Cliente WHERE idCliente = ? LIMIT 1
 `
 
-type GetClientByIdRow struct {
-	Idcliente int32  `json:"idcliente"`
-	Nombre    string `json:"nombre"`
-}
-
-func (q *Queries) GetClientById(ctx context.Context, idcliente int32) (GetClientByIdRow, error) {
+func (q *Queries) GetClientById(ctx context.Context, idcliente int32) (Cliente, error) {
 	row := q.db.QueryRowContext(ctx, getClientById, idcliente)
-	var i GetClientByIdRow
-	err := row.Scan(&i.Idcliente, &i.Nombre)
+	var i Cliente
+	err := row.Scan(&i.Idcliente, &i.Nombre, &i.Telefono)
 	return i, err
 }
 
 const getClientByName = `-- name: GetClientByName :one
-SELECT idCliente, nombre 
+SELECT idCliente, nombre, telefono 
 FROM Cliente WHERE nombre = ? LIMIT 1
 `
 
-type GetClientByNameRow struct {
-	Idcliente int32  `json:"idcliente"`
-	Nombre    string `json:"nombre"`
-}
-
-func (q *Queries) GetClientByName(ctx context.Context, nombre string) (GetClientByNameRow, error) {
+func (q *Queries) GetClientByName(ctx context.Context, nombre string) (Cliente, error) {
 	row := q.db.QueryRowContext(ctx, getClientByName, nombre)
-	var i GetClientByNameRow
-	err := row.Scan(&i.Idcliente, &i.Nombre)
+	var i Cliente
+	err := row.Scan(&i.Idcliente, &i.Nombre, &i.Telefono)
 	return i, err
 }
 
-const updateClient = `-- name: UpdateClient :execresult
+const updateClient = `-- name: UpdateClient :exec
 UPDATE Cliente
-SET nombre = ?
+SET nombre = ?, telefono = ?
 WHERE idCliente = ?
 `
 
 type UpdateClientParams struct {
 	Nombre    string `json:"nombre"`
+	Telefono  int32  `json:"telefono"`
 	Idcliente int32  `json:"idcliente"`
 }
 
-func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) (sql.Result, error) {
-	return q.db.ExecContext(ctx, updateClient, arg.Nombre, arg.Idcliente)
+func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) error {
+	_, err := q.db.ExecContext(ctx, updateClient, arg.Nombre, arg.Telefono, arg.Idcliente)
+	return err
 }
