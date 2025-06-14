@@ -2,7 +2,6 @@
 SELECT idUsuario, correo, usuario, role, idAdministrador, idCliente FROM Usuario;
 
 -- name: GetUserById :one
--- name: GetUserById :one
 SELECT 
   idUsuario AS id, 
   usuario AS user, 

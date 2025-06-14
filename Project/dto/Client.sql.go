@@ -17,7 +17,7 @@ VALUES (?,?)
 
 type CreateClientParams struct {
 	Nombre   string `json:"nombre"`
-	Telefono int32  `json:"telefono"`
+	Telefono string `json:"telefono"`
 }
 
 func (q *Queries) CreateClient(ctx context.Context, arg CreateClientParams) (sql.Result, error) {
@@ -91,7 +91,7 @@ func (q *Queries) GetClientByName(ctx context.Context, nombre string) (Cliente, 
 	return i, err
 }
 
-const updateClient = `-- name: UpdateClient :exec
+const updateClient = `-- name: UpdateClient :execresult
 UPDATE Cliente
 SET nombre = ?, telefono = ?
 WHERE idCliente = ?
@@ -99,11 +99,10 @@ WHERE idCliente = ?
 
 type UpdateClientParams struct {
 	Nombre    string `json:"nombre"`
-	Telefono  int32  `json:"telefono"`
+	Telefono  string `json:"telefono"`
 	Idcliente int32  `json:"idcliente"`
 }
 
-func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) error {
-	_, err := q.db.ExecContext(ctx, updateClient, arg.Nombre, arg.Telefono, arg.Idcliente)
-	return err
+func (q *Queries) UpdateClient(ctx context.Context, arg UpdateClientParams) (sql.Result, error) {
+	return q.db.ExecContext(ctx, updateClient, arg.Nombre, arg.Telefono, arg.Idcliente)
 }

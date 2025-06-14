@@ -1,9 +1,13 @@
-//Se inserta manualmente en la base de datos para el ingreso de usuarios 
-CREATE TRIGGER `set_role_usuario_before` BEFORE INSERT ON `usuario`
- FOR EACH ROW BEGIN
-  IF NEW.idCliente IS NOT NULL AND NEW.idAdministrador IS NULL THEN
-    SET NEW.role = 'Client';
-  ELSEIF NEW.idAdministrador IS NOT NULL AND NEW.idCliente IS NULL THEN
-    SET NEW.role = 'Admin';
-  END IF;
-END
+// (LO SIGUIENTE SE INGRESA COMO CONSULTA SQL EN LA BASE DE DATOS) =>
+DELIMITER //
+CREATE TRIGGER set_role_usuario_before
+BEFORE INSERT ON usuario
+FOR EACH ROW
+BEGIN
+    IF NEW.idCliente IS NOT NULL AND NEW.idAdministrador IS NULL THEN
+        SET NEW.role = 'Client';
+    ELSEIF NEW.idAdministrador IS NOT NULL AND NEW.idCliente IS NULL THEN
+        SET NEW.role = 'Admin';
+    END IF;
+END//
+DELIMITER ;

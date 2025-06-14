@@ -17,7 +17,7 @@ type Administrador struct {
 type Cliente struct {
 	Idcliente int32  `json:"idcliente"`
 	Nombre    string `json:"nombre"`
-	Telefono  int32  `json:"telefono"`
+	Telefono  string `json:"telefono"`
 }
 
 type Detalleviaje struct {
