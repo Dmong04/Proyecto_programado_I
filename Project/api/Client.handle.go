@@ -113,6 +113,9 @@ func (server *Server) UpdateClient(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
+	rows, _ := res.RowsAffected()
+	ctx.JSON(http.StatusOK, gin.H{"rows_updated": rows})
 	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente actualizado con éxito"})
 }
 

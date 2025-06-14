@@ -10,4 +10,3 @@ BEGIN
         SET NEW.role = 'Admin';
     END IF;
 END//
-DELIMITER ;
