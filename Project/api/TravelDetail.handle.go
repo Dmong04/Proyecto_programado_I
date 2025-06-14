@@ -4,8 +4,6 @@ import (
 	"database/sql"
 	"net/http"
 	"project/dto"
-	"strings"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -41,39 +39,11 @@ func (server *Server) getDetailsByID(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, detail)
 }
 
-type onlyDate struct {
-	time.Time
-}
-
-func (date *onlyDate) UnmarshalJSON(b []byte) error {
-	s := strings.Trim(string(b), `"`)
-	t, err := time.Parse("2006-01-02", s)
-	if err != nil {
-		return err
-	}
-	date.Time = t
-	return nil
-}
-
-type onlyTime struct {
-	time.Time
-}
-
-func (hour *onlyTime) UnmarshalJSON(b []byte) error {
-	s := strings.Trim(string(b), `"`)
-	t, err := time.Parse("15:00", s)
-	if err != nil {
-		return err
-	}
-	hour.Time = t
-	return nil
-}
-
 type createDetailsRequest struct {
-	Fecha       onlyDate      `json:"date" binding:"required"`
-	Hora        onlyTime      `json:"time" binding:"required"`
-	Idproveedor sql.NullInt32 `json:"providerId" binding:"omitempty"`
-	Idviaje     int32         `json:"travelId" binding:"required"`
+	Fecha       string `json:"fecha" binding:"required"`
+	Hora        string `json:"hora" binding:"required"`
+	Idproveedor int32  `json:"idproveedor" binding:"omitempty"`
+	Idviaje     int32  `json:"idviaje" binding:"required"`
 }
 
 func (server *Server) CreateDetail(ctx *gin.Context) {
@@ -83,8 +53,8 @@ func (server *Server) CreateDetail(ctx *gin.Context) {
 		return
 	}
 	args := dto.CreateTravelDetailParams{
-		Fecha:       request.Fecha.Time,
-		Hora:        request.Hora.Time,
+		Fecha:       request.Fecha,
+		Hora:        request.Hora,
 		Idproveedor: request.Idproveedor,
 		Idviaje:     request.Idviaje,
 	}
@@ -101,10 +71,10 @@ type updateDetailrequest struct {
 	ID int32 `uri:"id" binding:"required"`
 }
 type updateDetailBodyrequest struct {
-	Fecha       onlyDate      `json:"date" binding:"required"`
-	Hora        onlyTime      `json:"time" binding:"required"`
-	Idproveedor sql.NullInt32 `json:"providerId" binding:"omitempty"`
-	Idviaje     int32         `json:"travelId" binding:"required"`
+	Fecha       string `json:"fecha" binding:"required"`
+	Hora        string `json:"hora" binding:"required"`
+	Idproveedor int32  `json:"idproveedor" binding:"omitempty"`
+	Idviaje     int32  `json:"idviaje" binding:"required"`
 }
 
 func (server *Server) UpdateDetail(ctx *gin.Context) {
@@ -119,8 +89,8 @@ func (server *Server) UpdateDetail(ctx *gin.Context) {
 		return
 	}
 	params := dto.UpdateTravelDetailParams{
-		Fecha:          bodyReq.Fecha.Time,
-		Hora:           bodyReq.Hora.Time,
+		Fecha:          bodyReq.Fecha,
+		Hora:           bodyReq.Hora,
 		Idproveedor:    bodyReq.Idproveedor,
 		Idviaje:        bodyReq.Idviaje,
 		Iddetalleviaje: request.ID,
