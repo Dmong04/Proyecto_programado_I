@@ -109,10 +109,14 @@ func (server *Server) UpdateClient(ctx *gin.Context) {
 		Telefono:  body.Telefono,
 		Idcliente: uri.ID,
 	}
-	if err := server.dbtx.UpdateClient(ctx, params); err != nil {
+	res, err := server.dbtx.UpdateClient(ctx, params)
+	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
+
+	rows, _ := res.RowsAffected()
+	ctx.JSON(http.StatusOK, gin.H{"rows_updated": rows})
 	ctx.JSON(http.StatusOK, gin.H{"message": "Cliente actualizado con éxito"})
 }
 

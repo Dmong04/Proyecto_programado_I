@@ -66,9 +66,9 @@ CREATE TABLE IF NOT EXISTS `Proveedor` (
 -- Tabla: detalleViaje
 CREATE TABLE IF NOT EXISTS `detalleViaje` (
   `idDetalleViaje` INT NOT NULL AUTO_INCREMENT,
-  `fecha` DATE NOT NULL,
-  `hora` TIME NOT NULL,
-  `idProveedor` INT DEFAULT NULL,
+  `fecha` VARCHAR(10) NOT NULL,
+  `hora` VARCHAR(10) NOT NULL,
+  `idProveedor` INT NOT NULL,
   `idViaje` INT NOT NULL,
   PRIMARY KEY (`idDetalleViaje`),
   INDEX `idx_proveedor` (`idProveedor`),
@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `detalleViaje` (
   CONSTRAINT `FK_detalle_viaje_proveedor`
     FOREIGN KEY (`idProveedor`)
     REFERENCES `Proveedor` (`idProveedor`)
-    ON DELETE SET NULL
+    ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 
