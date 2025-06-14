@@ -89,6 +89,7 @@ CREATE TABLE IF NOT EXISTS `reservas` (
   `idreservas` INT NOT NULL AUTO_INCREMENT,
   `idUsuario` INT NOT NULL,
   `idDetalle` INT NOT NULL,
+  `estado` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`idreservas`),
   INDEX `idx_reserva_usuario` (`idUsuario`),
   INDEX `idx_reserva_detalle` (`idDetalle`),

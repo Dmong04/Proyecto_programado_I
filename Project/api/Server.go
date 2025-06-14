@@ -49,11 +49,11 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		sharedRoutes.GET("api/v1/Client/name/:name", server.GetClientByName)
 		sharedRoutes.GET("api/v1/Client/id/:id", server.GetClientByID)
 		// Rutas de gestión de reservas
-		sharedRoutes.GET("api/v1/Reservations/all", server.GetAllReservations)
-		sharedRoutes.GET("api/v1/Reservations/:id", server.GetReservationsById)
-		sharedRoutes.PATCH("api/v1/Reservations/update/:id", server.UpdateReservations)
-		sharedRoutes.DELETE("api/v1/Reservations/delete/:id", server.DeleteReservation)
-		sharedRoutes.POST("api/v1/Reservations", server.CreateReservation)
+		sharedRoutes.GET("api/v1/Reservations/all", server.GetAllReservations)          // (funciona)
+		sharedRoutes.GET("api/v1/Reservations/:id", server.GetReservationsById)         // (funciona)
+		sharedRoutes.PATCH("api/v1/Reservations/update/:id", server.UpdateReservations) // (funciona)
+		sharedRoutes.DELETE("api/v1/Reservations/delete/:id", server.DeleteReservation) // (funciona)
+		sharedRoutes.POST("api/v1/Reservations", server.CreateReservation)              // (Funciona)
 		// Gestión en los detalles del viaje
 		sharedRoutes.GET("api/v1/Details/all", server.getAllDetails)
 		sharedRoutes.GET("api/v1/Details/:id", server.getDetailsByID)
@@ -94,7 +94,9 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		// GESTION USUARIO
 		adminRoutes.GET("api/v1/User/all", server.getAllUsers)                  // (Funciona)
 		adminRoutes.GET("api/v1/User/:id", server.getUserById)                  // (Funciona)
-		adminRoutes.GET("api/v1/User/UserName/:user", server.getUserByUserName) // (Funciona)       // (Funciona)
+		adminRoutes.GET("api/v1/User/UserName/:user", server.getUserByUserName) // (Funciona)
+		// Update status de reserva
+		adminRoutes.PATCH("api/v1/Reservations/status/:id", server.UpdateStatus) // ()
 	}
 	clientRoutes.Use(auth, roleMiddleware("Client"))
 	{

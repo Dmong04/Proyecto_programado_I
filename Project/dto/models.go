@@ -17,6 +17,7 @@ type Administrador struct {
 type Cliente struct {
 	Idcliente int32  `json:"idcliente"`
 	Nombre    string `json:"nombre"`
+	Telefono  int32  `json:"telefono"`
 }
 
 type Detalleviaje struct {
@@ -27,13 +28,6 @@ type Detalleviaje struct {
 	Idviaje        int32         `json:"idviaje"`
 }
 
-type Pasajero struct {
-	Idpasajeros int32  `json:"idpasajeros"`
-	Nombre      string `json:"nombre"`
-	Edad        int32  `json:"edad"`
-	Iddetalle   int32  `json:"iddetalle"`
-}
-
 type Proveedor struct {
 	Idproveedor int32  `json:"idproveedor"`
 	Nombre      string `json:"nombre"`
@@ -41,17 +35,10 @@ type Proveedor struct {
 }
 
 type Reserva struct {
-	Idreservas      int32 `json:"idreservas"`
-	Idcliente       int32 `json:"idcliente"`
-	Idadministrador int32 `json:"idadministrador"`
-	Iddetalle       int32 `json:"iddetalle"`
-}
-
-type Telefonocliente struct {
-	Idtelefonoclientes int32  `json:"idtelefonoclientes"`
-	Numero             string `json:"numero"`
-	Tipo               string `json:"tipo"`
-	Idcliente          int32  `json:"idcliente"`
+	Idreservas int32  `json:"idreservas"`
+	Idusuario  int32  `json:"idusuario"`
+	Iddetalle  int32  `json:"iddetalle"`
+	Estado     string `json:"estado"`
 }
 
 type Usuario struct {

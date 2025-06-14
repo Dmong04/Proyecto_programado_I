@@ -24,9 +24,9 @@ func (server *Server) GetAllReservations(ctx *gin.Context) {
 // =====================================================
 
 type createReservationRequest struct {
-	ClientID        int32 `json:"idclient" binding:"required"`
-	AdministratorID int32 `json:"idadministrator" binding:"required"`
-	DetailID        int32 `json:"idDetail" binding:"required"`
+	UsuarioID int32  `json:"idUsuario" binding:"required"`
+	DetailID  int32  `json:"idDetail" binding:"required"`
+	Estado    string `json:"estado" binding:"required"`
 }
 
 func (server *Server) CreateReservation(ctx *gin.Context) {
@@ -38,9 +38,9 @@ func (server *Server) CreateReservation(ctx *gin.Context) {
 		return
 	}
 	params := dto.CreateReservationParams{
-		Idcliente:       request.ClientID,
-		Idadministrador: request.AdministratorID,
-		Iddetalle:       request.DetailID,
+		Idusuario: request.UsuarioID,
+		Iddetalle: request.DetailID,
+		Estado:    request.Estado,
 	}
 
 	reservation, err := server.dbtx.CreateReservation(ctx, params)
@@ -59,9 +59,8 @@ type updateReservationRequest struct {
 }
 
 type updateReservationBodyRequest struct {
-	ClientID        int32 `json:"idclient" binding:"required"`
-	AdministratorID int32 `json:"idadministrator" binding:"required"`
-	DetailID        int32 `json:"idDetail" binding:"required"`
+	UsuarioID int32 `json:"idusuario" binding:"required"`
+	DetailID  int32 `json:"idDetail" binding:"required"`
 }
 
 func (server *Server) UpdateReservations(ctx *gin.Context) {
@@ -79,10 +78,9 @@ func (server *Server) UpdateReservations(ctx *gin.Context) {
 	}
 
 	params := dto.UpdateReservationParams{
-		Idcliente:       bodyReq.ClientID,
-		Idadministrador: bodyReq.AdministratorID,
-		Iddetalle:       bodyReq.DetailID,
-		Idreservas:      request.ID,
+		Idusuario:  bodyReq.UsuarioID,
+		Iddetalle:  bodyReq.DetailID,
+		Idreservas: request.ID,
 	}
 	err := server.dbtx.UpdateReservation(ctx, params)
 	if err != nil {
@@ -90,6 +88,39 @@ func (server *Server) UpdateReservations(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{"message": " La reserva  se ha actualizado con éxito"})
+}
+
+type updateStatusRequest struct {
+	ID int32 `uri:"id" binding:"required"`
+}
+type updateStatusBodyRequest struct {
+	Estado string `json:"estado" binding:"required"`
+}
+
+func (server *Server) UpdateStatus(ctx *gin.Context) {
+
+	var request updateStatusRequest
+	if err := ctx.ShouldBindUri(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	var bodyReq updateStatusBodyRequest
+	if err := ctx.ShouldBindJSON(&bodyReq); err != nil {
+		ctx.JSON(http.StatusBadRequest, errorResponse(err))
+		return
+	}
+
+	params := dto.UpdateStatusParams{
+		Estado:     bodyReq.Estado,
+		Idreservas: request.ID,
+	}
+	err := server.dbtx.UpdateStatus(ctx, params)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{"message": " El estado de la reserva se ha actualizado con éxito"})
 }
 
 // =====================================================
