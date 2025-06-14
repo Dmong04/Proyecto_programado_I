@@ -11,16 +11,17 @@ import (
 )
 
 const createUser = `-- name: CreateUser :execresult
-INSERT INTO Usuario (correo, usuario, contraseña, idAdministrador, idCliente, created_at, updated_at)
-VALUES (?, ?, ?, ?, ?, now(), now())
+INSERT INTO Usuario (correo, usuario, contraseña, img, idAdministrador, idCliente, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, now(), now())
 `
 
 type CreateUserParams struct {
-	Correo          string        `json:"correo"`
-	Usuario         string        `json:"usuario"`
-	Contraseña      string        `json:"contraseña"`
-	Idadministrador sql.NullInt32 `json:"idadministrador"`
-	Idcliente       sql.NullInt32 `json:"idcliente"`
+	Correo          string         `json:"correo"`
+	Usuario         string         `json:"usuario"`
+	Contraseña      string         `json:"contraseña"`
+	Img             sql.NullString `json:"img"`
+	Idadministrador sql.NullInt32  `json:"idadministrador"`
+	Idcliente       sql.NullInt32  `json:"idcliente"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Result, error) {
@@ -28,6 +29,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (sql.Res
 		arg.Correo,
 		arg.Usuario,
 		arg.Contraseña,
+		arg.Img,
 		arg.Idadministrador,
 		arg.Idcliente,
 	)
@@ -85,7 +87,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]GetAllUsersRow, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT idusuario, correo, usuario, contraseña, role, idadministrador, idcliente, created_at, updated_at, remember_token FROM Usuario WHERE correo=? LIMIT 1
+SELECT idusuario, correo, usuario, contraseña, role, img, idadministrador, idcliente, created_at, updated_at, remember_token FROM Usuario WHERE correo=? LIMIT 1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, correo string) (Usuario, error) {
@@ -97,6 +99,7 @@ func (q *Queries) GetUserByEmail(ctx context.Context, correo string) (Usuario, e
 		&i.Usuario,
 		&i.Contraseña,
 		&i.Role,
+		&i.Img,
 		&i.Idadministrador,
 		&i.Idcliente,
 		&i.CreatedAt,
@@ -113,6 +116,7 @@ SELECT
   correo AS email, 
   contraseña AS password, 
   role,
+  img AS image,
   idCliente,
   idAdministrador
 FROM Usuario
@@ -120,13 +124,14 @@ WHERE idUsuario = ? LIMIT 1
 `
 
 type GetUserByIdRow struct {
-	ID              int32         `json:"id"`
-	User            string        `json:"user"`
-	Email           string        `json:"email"`
-	Password        string        `json:"password"`
-	Role            string        `json:"role"`
-	Idcliente       sql.NullInt32 `json:"idcliente"`
-	Idadministrador sql.NullInt32 `json:"idadministrador"`
+	ID              int32          `json:"id"`
+	User            string         `json:"user"`
+	Email           string         `json:"email"`
+	Password        string         `json:"password"`
+	Role            string         `json:"role"`
+	Image           sql.NullString `json:"image"`
+	Idcliente       sql.NullInt32  `json:"idcliente"`
+	Idadministrador sql.NullInt32  `json:"idadministrador"`
 }
 
 func (q *Queries) GetUserById(ctx context.Context, idusuario int32) (GetUserByIdRow, error) {
@@ -138,6 +143,7 @@ func (q *Queries) GetUserById(ctx context.Context, idusuario int32) (GetUserById
 		&i.Email,
 		&i.Password,
 		&i.Role,
+		&i.Image,
 		&i.Idcliente,
 		&i.Idadministrador,
 	)
@@ -151,6 +157,7 @@ SELECT
   correo AS email,
   contraseña AS password,
   role,
+  img AS image,
   created_at,
   updated_at
 FROM Usuario
@@ -158,13 +165,14 @@ WHERE usuario = ?
 `
 
 type GetUserByUserNameRow struct {
-	ID        int32        `json:"id"`
-	User      string       `json:"user"`
-	Email     string       `json:"email"`
-	Password  string       `json:"password"`
-	Role      string       `json:"role"`
-	CreatedAt sql.NullTime `json:"created_at"`
-	UpdatedAt sql.NullTime `json:"updated_at"`
+	ID        int32          `json:"id"`
+	User      string         `json:"user"`
+	Email     string         `json:"email"`
+	Password  string         `json:"password"`
+	Role      string         `json:"role"`
+	Image     sql.NullString `json:"image"`
+	CreatedAt sql.NullTime   `json:"created_at"`
+	UpdatedAt sql.NullTime   `json:"updated_at"`
 }
 
 func (q *Queries) GetUserByUserName(ctx context.Context, usuario string) (GetUserByUserNameRow, error) {
@@ -176,6 +184,7 @@ func (q *Queries) GetUserByUserName(ctx context.Context, usuario string) (GetUse
 		&i.Email,
 		&i.Password,
 		&i.Role,
+		&i.Image,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 	)

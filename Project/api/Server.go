@@ -72,6 +72,8 @@ func NewServer(dbtx *dto.DbTransaction) (*Server, error) {
 		sharedRoutes.PATCH("api/v1/User/update/:id", server.updateUser) // (Funciona)
 		sharedRoutes.PATCH("api/v1/User/password/:id", server.updatePassword)
 		sharedRoutes.DELETE("api/v1/User/delete/:id", server.deleteUser) // (Funciona)
+		sharedRoutes.GET("api/v1/User/image/:name", server.getUserImg)   // (funciona)
+		sharedRoutes.POST("api/v1/User/upload", server.uploadUserImg)    // (Funciona)
 	}
 	adminRoutes.Use(auth, roleMiddleware("Admin"))
 	{
