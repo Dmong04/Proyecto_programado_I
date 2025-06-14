@@ -109,7 +109,7 @@ func (server *Server) UpdateClient(ctx *gin.Context) {
 		Telefono:  body.Telefono,
 		Idcliente: uri.ID,
 	}
-	if _, err := server.dbtx.UpdateClient(ctx, params); err != nil {
+	if err := server.dbtx.UpdateClient(ctx, params); err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}

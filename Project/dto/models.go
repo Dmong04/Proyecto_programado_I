@@ -47,7 +47,6 @@ type Usuario struct {
 	Usuario         string         `json:"usuario"`
 	Contraseña      string         `json:"contraseña"`
 	Role            string         `json:"role"`
-	Img             sql.NullString `json:"img"`
 	Idadministrador sql.NullInt32  `json:"idadministrador"`
 	Idcliente       sql.NullInt32  `json:"idcliente"`
 	CreatedAt       sql.NullTime   `json:"created_at"`
