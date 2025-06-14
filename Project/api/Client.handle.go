@@ -19,22 +19,27 @@ func (server *Server) GetAllClients(ctx *gin.Context) {
 }
 
 // POST /clients
+type createClientRequest struct {
+	Name     string `json:"name" binding:"required"`
+	Telefono string `json:"telefono" binding:"required"`
+}
+
 func (server *Server) CreateClient(ctx *gin.Context) {
-	var req dto.CreateClientParams
+	var req createClientRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, errorResponse(err))
 		return
 	}
-	result, err := server.dbtx.CreateClient(ctx, req)
+	params := dto.CreateClientParams{
+		Nombre:   req.Name,
+		Telefono: req.Telefono,
+	}
+	result, err := server.dbtx.CreateClient(ctx, params)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
 		return
 	}
-	lastId, err := result.LastInsertId()
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, errorResponse(err))
-		return
-	}
+	var lastId, _ = result.LastInsertId()
 	ctx.JSON(http.StatusOK, gin.H{"generated_id": lastId})
 }
 
