@@ -8,27 +8,26 @@ package dto
 import (
 	"context"
 	"database/sql"
-	"time"
 )
 
 const createTravelDetail = `-- name: CreateTravelDetail :execresult
-INSERT INTO detalleViaje (idProveedor, idViaje, fecha, hora)
+INSERT INTO detalleViaje (fecha, hora, idProveedor, idViaje)
 VALUES (?, ?, ?, ?)
 `
 
 type CreateTravelDetailParams struct {
-	Idproveedor sql.NullInt32 `json:"idproveedor"`
-	Idviaje     int32         `json:"idviaje"`
-	Fecha       time.Time     `json:"fecha"`
-	Hora        time.Time     `json:"hora"`
+	Fecha       string `json:"fecha"`
+	Hora        string `json:"hora"`
+	Idproveedor int32  `json:"idproveedor"`
+	Idviaje     int32  `json:"idviaje"`
 }
 
 func (q *Queries) CreateTravelDetail(ctx context.Context, arg CreateTravelDetailParams) (sql.Result, error) {
 	return q.db.ExecContext(ctx, createTravelDetail,
-		arg.Idproveedor,
-		arg.Idviaje,
 		arg.Fecha,
 		arg.Hora,
+		arg.Idproveedor,
+		arg.Idviaje,
 	)
 }
 
@@ -93,24 +92,24 @@ func (q *Queries) GetTravelDetailById(ctx context.Context, iddetalleviaje int32)
 
 const updateTravelDetail = `-- name: UpdateTravelDetail :exec
 UPDATE detalleViaje
-SET idProveedor = ?, idViaje = ?, fecha = ?, hora = ?
+SET fecha = ?, hora = ?, idProveedor = ?, idViaje = ?
 WHERE idDetalleViaje = ?
 `
 
 type UpdateTravelDetailParams struct {
-	Idproveedor    sql.NullInt32 `json:"idproveedor"`
-	Idviaje        int32         `json:"idviaje"`
-	Fecha          time.Time     `json:"fecha"`
-	Hora           time.Time     `json:"hora"`
-	Iddetalleviaje int32         `json:"iddetalleviaje"`
+	Fecha          string `json:"fecha"`
+	Hora           string `json:"hora"`
+	Idproveedor    int32  `json:"idproveedor"`
+	Idviaje        int32  `json:"idviaje"`
+	Iddetalleviaje int32  `json:"iddetalleviaje"`
 }
 
 func (q *Queries) UpdateTravelDetail(ctx context.Context, arg UpdateTravelDetailParams) error {
 	_, err := q.db.ExecContext(ctx, updateTravelDetail,
-		arg.Idproveedor,
-		arg.Idviaje,
 		arg.Fecha,
 		arg.Hora,
+		arg.Idproveedor,
+		arg.Idviaje,
 		arg.Iddetalleviaje,
 	)
 	return err
